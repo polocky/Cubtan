@@ -9,3 +9,6 @@ Makefile.old
 nytprof.out
 MANIFEST.bak
 *.sw[po]
+var
+conf
+bin

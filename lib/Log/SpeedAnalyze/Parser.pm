@@ -1,0 +1,135 @@
+package Log::SpeedAnalyze::Parser;
+
+use warnings;
+use strict;
+use Data::Dumper;
+use Log::SpeedAnalyze::Result;
+
+sub new {
+    my $class = shift;
+    my $args = shift || {};
+    my $self = bless $args, $class; 
+    my $config = do $self->{config_file} ;
+    $self->{config} = $config;
+    return $self;
+}
+
+sub parser_name {
+    my $self = shift;
+    return 'parse_' . $self->config->{format};
+}
+
+sub config_file { shift->{config_file} }
+sub config { shift->{config} }
+sub parse {
+    my $self = shift;
+    my $file = shift;
+    my $result = {};
+    open( FH , $file ) or  die "Can not open the $file";
+
+    while(<FH>){
+        $self->analyze_line( $_ , $result );
+    }
+    close(FH);
+    return Log::SpeedAnalyze::Result->new( $result , $self->config ); 
+}
+
+sub tag { shift->config->{tag} || [] }
+sub range { shift->config->{range} }
+sub unit { shift->config->{unit} || '' }
+sub analyze_line {
+    my $self = shift;
+    my $line = shift;
+    my $result = shift;
+    my $name = $self->parser_name;
+    my $row = $self->$name($line);
+    unless ( $row->{code} ){
+        $result->{skip} ||=0;
+        $result->{skip}++;
+        return;
+    }
+
+    $result->{code}->{$row->{code}} ||= 0;
+    $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
+
+    if( $self->unit eq '%D' ) {
+        $row->{time} = $row->{time} / 1000000;
+    }
+
+    if( $row->{code} == 200) {
+
+        if( $self->alert < $row->{time} ) {
+            $result->{alert_count} ||=0;
+            $result->{alert_count}++;
+        }
+
+        for(@{$self->tag}){
+            if( $row->{path} =~ $_->{rule} ) {
+                $result->{tag}{$_->{name}}{count} ||=0;
+                $result->{tag}{$_->{name}}{count}++;
+
+                $result->{tag}{$_->{name}}{total} ||=0;
+                $result->{tag}{$_->{name}}{total} += $row->{time};
+
+                if( $self->alert < $row->{time} ) {
+                    $result->{tag}{$_->{name}}{alert_count} ||=0;
+                    $result->{tag}{$_->{name}}{alert_count}++;
+                }
+
+
+                my @range = reverse @{$self->range};
+                for my $range (@range){
+                    if ( $row->{time} > $range ){
+                        $result->{tag}{$_->{name}}{range}{$range} ||=0;
+                        $result->{tag}{$_->{name}}{range}{$range}++;
+                        last;
+                    }
+                }
+
+
+                if( $range[0] > $row->{time} ) {
+                    $result->{tag}{$_->{name}}{range}{0} ||=0;
+                    $result->{tag}{$_->{name}}{range}{0}++;
+                }
+
+                $result->{tag}{$_->{name}}{min} = $row->{time} if !$result->{tag}{$_->{name}}{min} or $result->{tag}{$_->{name}}{min} > $row->{time};
+                $result->{tag}{$_->{name}}{max} = $row->{time} if !$result->{tag}{$_->{name}}{max} or $result->{tag}{$_->{name}}{max} < $row->{time};
+            }
+            
+        }
+    }
+}
+
+sub alert { shift->config->{alert} }
+
+
+sub parse_combined {
+    my $self = shift;
+    my $line = shift;
+    my $args = {};
+($args->{ip},$args->{user},$args->{group},$args->{date},$args->{method},$args->{path},$args->{proto},$args->{code},$args->{bytes}, $args->{ref},$args->{ua} ,$args->{time}) 
+= $line =~ m{^([0-9\.]+) ([a-zA-Z0-9\._-]+) ([a-zA-Z0-9\._-]+) \[([^\] ]+ \+\d+)\] \"([A-Z]+) ((?:[^"]|(?<=\\)\")*) (HTTP/\d\.\d)\" ([\d-]+) ([\d-]+) "((?:[^"]|(?<=\\)\")*)" "((?:[^"]|(?<=\\)\")*)" (\d+)$};
+    return $args;
+}
+
+sub parse_common {
+    my $self = shift;
+    my $line = shift;
+    my $args = {};
+($args->{ip},$args->{user},$args->{group},$args->{date},$args->{method},$args->{path},$args->{proto},$args->{code},$args->{bytes},$args->{time}) 
+= $line =~ m{^([0-9\.]+) ([a-zA-Z0-9\._-]+) ([a-zA-Z0-9\._-]+) \[([^\] ]+ \+\d+)\] \"([A-Z]+) ((?:[^"]|(?<=\\)\")*) (HTTP/\d\.\d)\" ([\d-]+) ([\d-]+) (\d+)$};
+    return $args;
+}
+1;
+
+=head1 NAME
+
+Log::SpeedAnalyze::Parser
+
+=head1 SYNOPSIS
+
+ use Log::SpeedAnalyze::Parser;
+ my $parser = Log::SpeedAnalyze::Parser->new( { config_file => 'conf.pl' } );
+ my $result = $parser->parse( 'logs/access_log' );
+
+=cut
