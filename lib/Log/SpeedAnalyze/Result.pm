@@ -30,9 +30,10 @@ sub tag {
     my $self = shift;
     $self->{tag};
 }
+
 sub alert {shift->{alert} || 0 }
 sub alert_count {shift->{alert_count} || 0 }
-sub skip { shift->{skip} }
+sub skip { shift->{skip} || 0 }
 
 sub alert_ratio {
     my $self = shift;
@@ -47,6 +48,17 @@ sub code {
         ? $self->{code}{$code} || 0
         : $self->{code}
         ;
+}
+
+sub code_list {
+    my $self = shift;
+    my $code = $self->code;
+    my @keys = sort {
+        $code->{$b} <=> $code->{$a}
+            || length($b) <=> length($a)
+            || $a cmp $b
+    } keys %$code;
+    return \@keys;
 }
 
 1;

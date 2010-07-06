@@ -2,7 +2,6 @@ package Log::SpeedAnalyze::Parser;
 
 use warnings;
 use strict;
-use Data::Dumper;
 use Log::SpeedAnalyze::Result;
 
 sub new {
@@ -25,12 +24,15 @@ sub parse {
     my $self = shift;
     my $file = shift;
     my $result = {};
-    open( FH , $file ) or  die "Can not open the $file";
-
-    while(<FH>){
-        $self->analyze_line( $_ , $result );
+    my @files = ref $file eq 'ARRAY' ? @$file : $file;
+    for(@files){
+        open( FH , $_) or  die "Can not open the $_";
+        while(<FH>){
+            $self->analyze_line( $_ , $result );
+        }
+        close(FH);
     }
-    close(FH);
+
     return Log::SpeedAnalyze::Result->new( $result , $self->config ); 
 }
 
@@ -131,5 +133,18 @@ Log::SpeedAnalyze::Parser
  use Log::SpeedAnalyze::Parser;
  my $parser = Log::SpeedAnalyze::Parser->new( { config_file => 'conf.pl' } );
  my $result = $parser->parse( 'logs/access_log' );
+
+ # conf.pl
+
+ +{
+    format => 'combined',
+    unit => '%D',
+    range => [ qw/0.2 0.3 0.4 0.5 1 2 3 4 5 10 30 50/],
+    alert => '0.5',
+    tag => [
+        { name =>'all' , rule =>  qr/.*/ },
+        { name =>'doc' , rule =>  qr/^\/[a-z0-9_]+\/d\// },
+    ]
+ }
 
 =cut
