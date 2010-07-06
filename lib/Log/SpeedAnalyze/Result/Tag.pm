@@ -11,7 +11,7 @@ sub new {
 }
 
 sub count { shift->{count} || 0 }
-sub min { shift->{mini}|| 0 }
+sub min { shift->{min}|| 0 }
 sub max { shift->{max} || 0 }
 sub total { shift->{total} || 0 }
 sub alert_count { shift->{alert_count} || 0  }
@@ -28,11 +28,7 @@ sub setup {
 sub setup_ranges {
     my $self = shift;
     my $range = $self->{range} || {};
-    my @keys = sort {
-        $range->{$b} <=> $range->{$a}
-            || length($b) <=> length($a)
-            || $a cmp $b
-    } keys %$range;
+    my @keys = sort { $a <=> $b } keys %$range;
 
     my @ranges = ();
 
@@ -49,7 +45,7 @@ sub setup_avg{
 sub setup_alert_ratio{
     my $self = shift;
     return 0 unless $self->alert_count;
-    int( $self->alert_count / $self->count * 100 ) ;
+    int($self->alert_count / $self->count * 100 * 100 ) / 100 ;
 }
 
 1;

@@ -53,11 +53,7 @@ sub code {
 sub code_list {
     my $self = shift;
     my $code = $self->code;
-    my @keys = sort {
-        $code->{$b} <=> $code->{$a}
-            || length($b) <=> length($a)
-            || $a cmp $b
-    } keys %$code;
+    my @keys = sort { $a <=> $b } keys %$code;
     return \@keys;
 }
 
