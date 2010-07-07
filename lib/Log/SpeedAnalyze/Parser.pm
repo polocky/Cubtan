@@ -12,12 +12,6 @@ sub new {
     $self->{config} = $config;
     return $self;
 }
-
-sub parser_name {
-    my $self = shift;
-    return 'parse_' . $self->config->{format};
-}
-
 sub config_file { shift->{config_file} }
 sub config { shift->{config} }
 sub parse {
@@ -42,12 +36,27 @@ sub unit { shift->config->{unit} || '' }
 
 sub very_slow { shift->config->{very_slow} || 0 } 
 
+sub parse_line {
+    my $self = shift;
+    my $line = shift;
+    my $row = $self->formater->($line);
+    return $row;
+}
+sub formater {
+    my $self = shift;
+    if( ref $self->config->{format} eq 'CODE' ) {
+        return  $self->config->{format};
+    }
+    else {
+        my $method = 'parse_' . $self->config->{format};
+        return sub { $self->$method(shift) };
+    }
+}
 sub analyze_line {
     my $self = shift;
     my $line = shift;
     my $result = shift;
-    my $name = $self->parser_name;
-    my $row = $self->$name($line);
+    my $row = $self->parse_line($line);
     unless ( $row->{code} ){
         $result->{skip} ||=0;
         $result->{skip}++;
@@ -59,10 +68,11 @@ sub analyze_line {
         $row->{time} = $row->{time} / 1000000;
     }
 
+    $result->{code}->{$row->{code}} ||= 0;
+    $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
+
     if( $row->{code} == 200) {
         my $hour = $self->get_hour( $row->{date} );
-        $result->{code}->{$row->{code}} ||= 0;
-        $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
 
         
         if ( $self->very_slow && $row->{time} > $self->very_slow ){

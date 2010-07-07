@@ -71,7 +71,7 @@ sub very_slow_hourly {
     return $self->{very_slow_hourly}{$hour} || 0 ;
 }
 
-sub very_slow_count { shift->{very_slow_count} }
-sub very_slow_logs { shift->{very_slow_logs} }
+sub very_slow_count { shift->{very_slow_count} || 0 }
+sub very_slow_logs { shift->{very_slow_logs} || [] }
 
 1;

@@ -4,6 +4,7 @@ Revision history for Perl extension Log::SpeedAnalyze
     - multi file parse support.
     - add script/report.pl
     - very slow check support
+    - code ref support for format.
 
 0.01    Sun Jul  4 17:06:41 2010
     - original version
