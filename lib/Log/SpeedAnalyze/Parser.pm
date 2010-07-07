@@ -39,6 +39,9 @@ sub parse {
 sub tag { shift->config->{tag} || [] }
 sub range { shift->config->{range} }
 sub unit { shift->config->{unit} || '' }
+
+sub very_slow { shift->config->{very_slow} || 0 } 
+
 sub analyze_line {
     my $self = shift;
     my $line = shift;
@@ -51,14 +54,26 @@ sub analyze_line {
         return;
     }
 
-    $result->{code}->{$row->{code}} ||= 0;
-    $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
 
     if( $self->unit eq '%D' ) {
         $row->{time} = $row->{time} / 1000000;
     }
 
     if( $row->{code} == 200) {
+        my $hour = $self->get_hour( $row->{date} );
+        $result->{code}->{$row->{code}} ||= 0;
+        $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
+
+        
+        if ( $self->very_slow && $row->{time} > $self->very_slow ){
+            $result->{very_slow}{count}||=0;
+            $result->{very_slow}{count}++;
+            $result->{very_slow}{hour}{$hour} ||=0;
+            $result->{very_slow}{hour}{$hour}++;
+            $result->{very_slow}{logs} ||= ();
+            push @{$result->{very_slow}{logs}} , $line ;
+        }
+
 
         if( $self->alert < $row->{time} ) {
             $result->{alert_count} ||=0;
@@ -121,6 +136,13 @@ sub parse_common {
 ($args->{ip},$args->{user},$args->{group},$args->{date},$args->{method},$args->{path},$args->{proto},$args->{code},$args->{bytes},$args->{time}) 
 = $line =~ m{^([0-9\.]+) ([a-zA-Z0-9\._-]+) ([a-zA-Z0-9\._-]+) \[([^\] ]+ \+\d+)\] \"([A-Z]+) ((?:[^"]|(?<=\\)\")*) (HTTP/\d\.\d)\" ([\d-]+) ([\d-]+) (\d+)$};
     return $args;
+}
+
+sub get_hour {
+    my $self = shift;
+    my $date = shift;
+    my($hour) = $date =~ /\d+:(\d+):\d+:\d+/;
+    return $hour;
 }
 1;
 

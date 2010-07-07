@@ -8,10 +8,12 @@ use Getopt::Long;
 
 my $config_file = '';
 my @log_files = (); 
+my $on_very_slow_log = 0;
 
 GetOptions(
     "config=s" => \$config_file,
     "log=s" => \@log_files,
+    "on_very_slow_log" => \$on_very_slow_log,
 );
 
 my $parser = Log::SpeedAnalyze::Parser->new( { config_file => $config_file } );
@@ -46,8 +48,28 @@ for my $key ( keys %$tag ) {
     print $t->draw;
 }
 
+if ( $result->very_slow ){
+    my $t2 = Text::SimpleTable->new([20, 'VERY SLOW' ],[20]);
+    $t2->row('setting', $result->very_slow . ' sec');
+    $t2->row('count', $result->very_slow_count );
+    $t2->hr;
+    for(0...23){
+        $t2->row(  $_ .':00' ,$result->very_slow_hourly($_) ) if $result->very_slow_hourly($_);
+    }
+    print $t2->draw;
+
+    if($on_very_slow_log){
+        my $t3 = Text::SimpleTable->new([80, 'VERY SLOW LOG' ] );
+        for(@{$result->very_slow_logs}) {
+            $t3->row($_);
+            $t3->hr;
+        }
+        print $t3->draw;
+    }
+}
+
 =head1 NAME
 
-script/report.pl --config conf/wiki.pl --log var/log1 -- var/log2
+script/report.pl --config conf/wiki.pl --log var/log1 -- var/log2 --on_very_slow_log
 
 =cut
