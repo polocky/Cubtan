@@ -18,6 +18,7 @@ sub alert_count { shift->{alert_count} || 0  }
 sub alert_ratio { shift->{alert_ratio} }
 sub ranges { shift->{ranges} }
 sub range { shift->{range}{shift} || 0 }
+sub avg { shift->{avg} || 0 }
 
 sub setup {
     my $self = shift;
@@ -40,7 +41,7 @@ sub setup_ranges {
 
 sub setup_avg{
     my $self = shift;
-    return $self->total / $self->count;
+    return int ($self->total / $self->count * 100 ) / 100 ;
 }
 sub setup_alert_ratio{
     my $self = shift;

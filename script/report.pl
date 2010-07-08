@@ -38,6 +38,7 @@ for my $key ( keys %$tag ) {
     $t->row( 'count', $obj->count );
     $t->row( 'min', $obj->min . ' sec' );
     $t->row( 'max', $obj->max . ' sec' );
+    $t->row( 'avg', $obj->avg . ' sec' );
     $t->row( 'alert count', $obj->alert_count );
     $t->row( 'alert ratio', $obj->alert_ratio .' %' );
     $t->hr;
