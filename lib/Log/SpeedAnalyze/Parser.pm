@@ -19,7 +19,7 @@ sub parse {
     my $self = shift;
     my $stuff = shift;
     my $result = {};
-    my @stuffs = ref $file eq 'ARRAY' ? @$stuff : $stuff;
+    my @stuffs = ref $stuff eq 'ARRAY' ? @$stuff : $stuff;
     for my $stuff (@stuffs){
         my $fh;
         if ( $stuff =~ /\.gz$/ ) {
