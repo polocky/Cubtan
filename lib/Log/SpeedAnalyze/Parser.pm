@@ -16,15 +16,21 @@ sub config_file { shift->{config_file} }
 sub config { shift->{config} }
 sub parse {
     my $self = shift;
-    my $file = shift;
+    my $stuff = shift;
     my $result = {};
-    my @files = ref $file eq 'ARRAY' ? @$file : $file;
-    for(@files){
-        open( FH , $_) or  die "Can not open the $_";
-        while(<FH>){
-            $self->analyze_line( $_ , $result );
+    my @stuffs = ref $file eq 'ARRAY' ? @$stuff : $stuff;
+    for(@stuffs){
+        my $fh;
+        if ( ref $_ eq 'GLOB' ) {
+            $fh = $_;
         }
-        close(FH);
+        else {
+            open( $fh, $_ ) or  die "Can not open the $_";
+            while ( <$fh> ) {
+                $self->analyze_line( $_ , $result );
+            }
+            close($fh);
+        }
     }
 
     return Log::SpeedAnalyze::Result->new( $result , $self->config ); 
