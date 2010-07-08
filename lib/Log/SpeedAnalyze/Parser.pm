@@ -3,6 +3,7 @@ package Log::SpeedAnalyze::Parser;
 use warnings;
 use strict;
 use Log::SpeedAnalyze::Result;
+use IO::Uncompress::Gunzip;
 
 sub new {
     my $class = shift;
@@ -19,17 +20,19 @@ sub parse {
     my $stuff = shift;
     my $result = {};
     my @stuffs = ref $file eq 'ARRAY' ? @$stuff : $stuff;
-    for(@stuffs){
+    for my $stuff (@stuffs){
         my $fh;
-        if ( ref $_ eq 'GLOB' ) {
-            $fh = $_;
+        if ( $stuff =~ /\.gz$/ ) {
+            $fh = new IO::Uncompress::Gunzip $stuff or die $!;
+        }
+        elsif ( ref $stuff eq 'GLOB' ) {
+            $fh = $stuff;
         }
         else {
-            open( $fh, $_ ) or  die "Can not open the $_";
-            while ( <$fh> ) {
-                $self->analyze_line( $_ , $result );
-            }
-            close($fh);
+            open( $fh, $stuff ) or  die "Can not open the $stuff";
+        }
+        while ( <$fh> ) {
+            $self->analyze_line( $_ , $result );
         }
     }
 
