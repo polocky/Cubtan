@@ -22,3 +22,16 @@ unless($arg){
 
 my $fetcher = Log::SpeedAnalyze::Fetcher->new( { config => $config } );
 $fetcher->fetch($arg);
+
+__END__
+
+=head1 NAME
+
+fetcher.pl
+
+=head1 SYNOPSIS
+
+ ./script/fetcher.pl --config conf/wiki_fetcher.pl
+ ./script/fetcher.pl --config conf/wiki_fetcher.pl --arg '2010-05-10'
+
+=cct
