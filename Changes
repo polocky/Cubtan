@@ -5,6 +5,7 @@ Revision history for Perl extension Log::SpeedAnalyze
     - add script/report.pl
     - very slow check support
     - code ref support for format.
+    - add Fetcher
 
 0.01    Sun Jul  4 17:06:41 2010
     - original version
