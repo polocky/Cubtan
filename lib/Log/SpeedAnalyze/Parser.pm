@@ -8,12 +8,25 @@ use IO::Uncompress::Gunzip;
 sub new {
     my $class = shift;
     my $args = shift || {};
-    my $self = bless $args, $class; 
-    my $config = do $self->{config_file} ;
-    $self->{config} = $config;
+    my $self = bless {} , $class; 
+    $self->setup($args);
     return $self;
 }
-sub config_file { shift->{config_file} }
+sub setup {
+    my $self=  shift;
+    my $args = shift;
+    my $config = $args->{config} || $args->{config_file} ;
+
+    if( ref $config eq 'HASH' ) {
+        $self->{config} = $config;
+    }
+    else {
+        $self->{config} = do $config ;
+    }
+
+}
+
+sub config_file {  warn 'deprecated' }
 sub config { shift->{config} }
 sub parse {
     my $self = shift;
@@ -172,7 +185,7 @@ Log::SpeedAnalyze::Parser
 =head1 SYNOPSIS
 
  use Log::SpeedAnalyze::Parser;
- my $parser = Log::SpeedAnalyze::Parser->new( { config_file => 'conf.pl' } );
+ my $parser = Log::SpeedAnalyze::Parser->new( { config => 'conf.pl' } );
  my $result = $parser->parse( 'logs/access_log' );
 
  # conf.pl
