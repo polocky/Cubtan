@@ -14,7 +14,13 @@ sub new {
 sub setup {
     my $self = shift;
     my $args = shift;
-    my $config = do($args->{config});
+    my $config;
+    if( ref $config eq 'HASH' ) {
+        $config = $args->{config};
+    }
+    else {
+        $config = do($args->{config});
+    }
     $self->{scp_args} = $config->{scp_args};
     $self->{log_path} = $config->{log_path};
     $self->{save_path} = $config->{save_path};
