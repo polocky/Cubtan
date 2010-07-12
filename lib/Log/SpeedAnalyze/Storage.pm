@@ -28,12 +28,58 @@ sub store {
     my $date = shift;
     my $result = shift;
     my $service_obj = $self->service_db->find_or_create( $result->name );
+    $self->insert_summary_log( $service_obj , $date , $result );
+    $self->insert_status_log( $service_obj , $date , $result );
     for my $tag ( keys %{$result->tag} ) {
         my $tag_obj = $service_obj->get_tag_obj( $tag );
     }
 
+}
+sub insert_status_log {
+    my $self   = shift;
+    my $service_obj = shift;
+    my $date   = shift;
+    my $result = shift;
+    my $driver = $self->driver;
+    $self->delete_status_log( $service_obj , $date );
+    for my $code (@{$result->code_list}){
+        my $sth = $driver->dbh->prepare("INSERT INTO status_log (service_id,date,code,count) VALUES ( ?,?,?,? )");
+        $sth->execute( $service_obj->id , $date , $code , $result->code($code) );
+        $sth->finish;
+    }
 
+}
 
+sub delete_status_log {
+    my $self = shift;
+    my $service_obj = shift;
+    my $date   = shift;
+    my $driver = $self->driver;
+    my $sth = $driver->dbh->prepare("DELETE FROM status_log WHERE service_id = ? AND date = ?");
+    $sth->execute(  $service_obj->id , $date );
+    $sth->finish;
+
+}
+
+sub insert_summary_log {
+    my $self   = shift;
+    my $service_obj = shift;
+    my $date   = shift;
+    my $result = shift;
+    my $driver = $self->driver;
+    $self->delete_summary_log( $service_obj , $date  );
+    my $sth = $driver->dbh->prepare("INSERT INTO summary_log (service_id,date,count,alert,alert_count,alert_ratio,skip_count) VALUES ( ?,?,?,?,?,?,? )");
+    $sth->execute( $service_obj->id , $date , $result->count, $result->alert , $result->alert_count,$result->alert_ratio,$result->skip_count);
+    $sth->finish;
+}
+sub delete_summary_log {
+    my $self   = shift;
+    my $service_obj = shift;
+    my $date   = shift;
+    my $driver = $self->driver;
+    my $sth = $driver->dbh->prepare("DELETE FROM summary_log WHERE service_id = ? AND date = ?");
+    $sth->execute(  $service_obj->id , $date );
+    $sth->finish;
 }
 
 1;

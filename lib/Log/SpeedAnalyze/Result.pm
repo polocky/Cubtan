@@ -49,6 +49,7 @@ sub tag {
 sub alert {shift->{alert} || 0 }
 sub alert_count {shift->{alert_count} || 0 }
 sub skip { shift->{skip} || 0 }
+*skip_count = *skip;
 
 sub alert_ratio {
     my $self = shift;
@@ -56,6 +57,7 @@ sub alert_ratio {
     my $total = $self->code('200');
     int( $self->alert_count / $total * 100 ) ;
 }
+sub count { shift->code(200) }
 sub code { 
     my $self = shift;
     my $code = shift;
