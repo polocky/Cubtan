@@ -23,6 +23,12 @@ sub setup {
     $self->{alert} = $config->{alert};
     $self->{very_slow} = $config->{very_slow} || 0;
 
+    unless ($config->{name}) {
+        warn 'new feature: should set name option';
+    }
+
+    $self->{name} = $config->{name} || 'unkown';
+
     if($self->{very_slow} ) {
         $self->{very_slow_hourly} = $result->{very_slow}{hour};
         $self->{very_slow_logs} = $result->{very_slow}{logs};
@@ -34,6 +40,7 @@ sub setup {
     }
 }
 
+sub name { shift->{name} }
 sub tag {
     my $self = shift;
     $self->{tag};
