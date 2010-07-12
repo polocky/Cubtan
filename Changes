@@ -7,6 +7,7 @@ Revision history for Perl extension Log::SpeedAnalyze
     - code ref support for format.
     - add Fetcher
     - deprecated config_file option for Parser. use config instead.
+    - adding script/store.pl for store result into database.
 
 0.01    Sun Jul  4 17:06:41 2010
     - original version

@@ -30,11 +30,60 @@ sub store {
     my $service_obj = $self->service_db->find_or_create( $result->name );
     $self->insert_summary_log( $service_obj , $date , $result );
     $self->insert_status_log( $service_obj , $date , $result );
-    for my $tag ( keys %{$result->tag} ) {
-        my $tag_obj = $service_obj->get_tag_obj( $tag );
+    for my $tag_name ( keys %{$result->tag} ) {
+        my $tag_obj = $service_obj->get_tag_obj( $tag_name );
+        $self->insert_tag_log( $date,$tag_obj,$result->tag->{$tag_name} );
+        $self->insert_tag_range_log( $date,$tag_obj,$result->tag->{$tag_name} );
     }
 
 }
+
+sub insert_tag_range_log {
+    my $self = shift;
+    my $date = shift;
+    my $tag_obj = shift;
+    my $tag = shift;
+    my $driver = $self->driver;
+    $self->delete_tag_range_log( $tag_obj, $date);
+    for ( @{$tag->ranges} ) {
+        my $sth = $driver->dbh->prepare("INSERT INTO tag_range_log (tag_id,date,range,count,service_id ) VALUES ( ?,?,?,?,? )");
+        $sth->execute( $tag_obj->id , $date , $_->{start} , $_->{count} , $tag_obj->service_id );
+        $sth->finish;
+    }
+
+}
+
+sub delete_tag_range_log {
+    my $self = shift;
+    my $tag_obj= shift;
+    my $date   = shift;
+    my $driver = $self->driver;
+    my $sth = $driver->dbh->prepare("DELETE FROM tag_range_log WHERE tag_id = ? AND date = ?");
+    $sth->execute(  $tag_obj->id , $date );
+    $sth->finish;
+}
+
+sub insert_tag_log{
+    my $self = shift;
+    my $date = shift;
+    my $tag_obj = shift;
+    my $tag = shift;
+    my $driver = $self->driver;
+    $self->delete_tag_log( $tag_obj , $date );
+    my $sth = $driver->dbh->prepare("INSERT INTO tag_log (tag_id,date,count,min,avg,alert_count,alert_ratio,service_id) VALUES ( ?,?,?,?,?,?,?,? )");
+    $sth->execute( $tag_obj->id , $date , $tag->count,$tag->min,$tag->avg,$tag->alert_count,$tag->alert_ratio,$tag_obj->service_id );
+    $sth->finish;
+}
+sub delete_tag_log {
+    my $self = shift;
+    my $tag_obj= shift;
+    my $date   = shift;
+    my $driver = $self->driver;
+    my $sth = $driver->dbh->prepare("DELETE FROM tag_log WHERE tag_id = ? AND date = ?");
+    $sth->execute(  $tag_obj->id , $date );
+    $sth->finish;
+}
+
 sub insert_status_log {
     my $self   = shift;
     my $service_obj = shift;
@@ -159,14 +208,13 @@ create table tag_log (
 
 create table tag_range_log (
   id int(10) unsigned NOT NULL auto_increment,
-  tag_log_id int unsigned NOT NULL, 
+  tag_id int unsigned NOT NULL,
+  date date NOT NULL,
   range double unsigned NOT NULL,  
   count int unsigned NOT NULL,
   service_id int unsigned NOT NULL,
-  tag_id int unsigned NOT NULL,
-  date date NOT NULL,
   PRIMARY KEY  (id),
-  UNIQUE KEY tag_log_id_range (tag_log_id,range)
+  UNIQUE KEY tag_id_date_range (tag_id,date,range)
 );
 
 =cut
