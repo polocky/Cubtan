@@ -26,4 +26,9 @@ sub get_tag_obj {
     return $self->tag_db->find_or_create( $name );
 }
 
+sub get_tag_objs {
+    my $self = shift;
+    return $self->tag_db->retrieve_all();
+}
+
 1;

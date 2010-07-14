@@ -1,0 +1,19 @@
+body,div,h1,h2,h3,h4,h5,h6,p,blockquote,pre,table,th,tr,td,dl,dt,dd,form,fieldset,legend,hr,span,a,img,strong,em,ins,del,cite,abbr,acronym,sup,sub,dfn,code,var,samp,kbd {
+margin:0;
+padding:0;
+}
+h1,h2,h3,h4,h5,h6 {
+    font-size:100%;
+    zoom:1;
+}
+div {
+    zoom:1;
+}
+#header {
+    background-color : brown;
+    color : #fff;
+}
+#footer {
+    background-color : brown;
+    color : #fff;
+}

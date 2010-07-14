@@ -14,6 +14,22 @@ sub find_or_create {
     return $service_obj;
 }
 
+sub lookup {
+    my $self = shift;
+    my $id = shift;
+    my $driver = $self->driver;
+    my $sth =$driver->dbh->prepare('SELECT * FROM service WHERE id = ?');
+    $sth->execute($id);
+    my $row = $sth->fetchrow_hashref;
+    $sth->finish;
+    if($row){
+        return Log::SpeedAnalyze::DB::Row::Service->new( $driver ,$row );
+    }
+    else {
+        return;
+    }
+}
+
 sub find {
     my $self = shift;
     my $name = shift;
@@ -45,7 +61,7 @@ sub retrieve_all {
     my $sth = $self->driver->dbh->prepare('SELECT * FROM service');
     $sth->execute();
     my @service_objs = ();
-    for(my $row = $sth->fetchrow_hashref()){
+    while(my $row = $sth->fetchrow_hashref()){
         my $service_obj =Log::SpeedAnalyze::DB::Row::Service->new($self->driver, $row);
         push @service_objs , $service_obj;
     }

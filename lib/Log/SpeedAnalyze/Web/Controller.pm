@@ -16,6 +16,10 @@ sub dispatch_root {
 sub dispatch_service {
     my $self = shift;
     $self->{file} = 'service';
+    my $service_id = $self->args->[0];
+    my $service_db = Log::SpeedAnalyze::DB::Service->new( $self->driver );
+    my $service_obj = $service_db->lookup( $service_id) or die 'NOT FOUND';;
+    $self->stash->{service_obj} = $service_obj;
 }
 
 
@@ -23,6 +27,7 @@ sub new {
     my $class = shift;
     my $args = shift;
     my $self = bless $args,$class;
+    $self->{stash} = {};
     return $self;
 }
 
@@ -32,19 +37,6 @@ sub req { shift->{req} }
 sub res { shift->{res} }
 sub file { shift->{file} }
 
-sub stash { 
-    my $self = shift;
-    my $key = shift;
-    my $data = shift;
-    if(defined $data){
-        $self->{stash}{$key} = $data;
-    }
-    elsif($key) {
-        return $self->{stash}{$key} ;
-    }
-    else {
-        return $self->{stash} || {};
-    }
-}
+sub stash { shift->{stash}  }
 
 1;

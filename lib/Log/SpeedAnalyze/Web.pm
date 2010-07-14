@@ -4,7 +4,6 @@ use strict;
 use Plack::Builder;
 use Log::SpeedAnalyze::Driver;
 use Log::SpeedAnalyze::Web::Dispatcher;
-use Log::SpeedAnalyze::Web::View;
 
 sub new {
     my $class = shift;
@@ -18,10 +17,9 @@ sub setup {
     my $config_file = shift;
     my $config = do ( $config_file );
     my $driver = Log::SpeedAnalyze::Driver->new( $config->{driver} );
-    my $view = Log::SpeedAnalyze::Web::View->new( $config->{view} );
-    my $dispatcher = Log::SpeedAnalyze::Web::Dispatcher->new( { driver => $driver , view => $view } );
+    my $dispatcher = Log::SpeedAnalyze::Web::Dispatcher->new( { driver => $driver , view_home => $config->{view_home} } );
     $self->{dispatcher} = $dispatcher;
-    my $root_path = $config->{view}{include_path}[0];
+    my $root_path = $config->{view_home};
     $self->{root_path} = $root_path;
     1;
 }

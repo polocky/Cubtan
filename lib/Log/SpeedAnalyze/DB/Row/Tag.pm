@@ -18,5 +18,14 @@ sub updated_at{ shift->{row}{updated_at} }
 sub service_id { shift->{row}{service_id} }
 sub service_obj { shift->{service_obj} }
 
+sub get_summary {
+    my $self = shift;
+    my $range = shift;
+    my $sth = $self->driver->dbh->prepare('SELECT * FROM summary_log WHERE date between ? AND ? AND service_id = ?');
+    $sth->executre($range->start,$range->end,$self->service_obj->id);
+    my $hash = $sth->fetchall_hashref('date');
+    $sth->finish;
+    return $hash;
+}
 
 1;

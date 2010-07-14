@@ -47,5 +47,17 @@ sub create {
     return $self->find($name);
 }
 
+sub retrieve_all {
+    my $self = shift;
+    my $sth = $self->driver->dbh->prepare("SELECT * FROM tag WHERE service_id = ?");
+    $sth->execute( $self->service_obj->id );
+    my @tag_objs = ();
+    while(my $row = $sth->fetchrow_hashref()){
+        my $tag_obj =Log::SpeedAnalyze::DB::Row::Tag->new($self->service_obj, $row);
+        push @tag_objs , $tag_obj;
+    }
+    $sth->finish;
+    return \@tag_objs;
+}
 
 1;

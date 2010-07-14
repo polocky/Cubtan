@@ -4,6 +4,7 @@ use strict;
 use Plack::Request;
 use Plack::Response;
 use Log::SpeedAnalyze::Web::Controller;
+use Text::MicroTemplate::Extended;
 
 
 sub new {
@@ -18,7 +19,7 @@ sub setup {
     my $self = shift;
     my $args = shift;
     $self->{driver} = $args->{driver};
-    $self->{view} = $args->{view};
+    $self->{view_home} = $args->{view_home};
     my $method_maping = {
         '/service/(\d+)/' => 'dispatch_service',
         '/' => 'dispatch_root',
@@ -27,7 +28,7 @@ sub setup {
 }
 
 sub driver { shift->{driver} }
-sub view { shift->{view} }
+sub view_home { shift->{view_home} }
 
 sub dispatch {
     my $self = shift;
@@ -44,7 +45,13 @@ sub dispatch {
             args => $args, 
         });
         $controller->$method_name();
-        my $body = $self->view->render_file( $controller->file ,$controller->stash );
+
+        my $mt = Text::MicroTemplate::Extended->new(
+            include_path  => [ $self->view_home ],
+            template_args => $controller->stash ,
+        );
+
+        my $body = $mt->render_file( $controller->file );
         $res->content_type('text/html') unless $res->content_type;
         $body ? $res->body($body) : $res->body(':-)');
         return $res->finalize;
