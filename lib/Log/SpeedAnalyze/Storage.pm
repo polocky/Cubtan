@@ -70,8 +70,8 @@ sub insert_tag_log{
     my $tag = shift;
     my $driver = $self->driver;
     $self->delete_tag_log( $tag_obj , $date );
-    my $sth = $driver->dbh->prepare("INSERT INTO tag_log (tag_id,date,count,min,avg,alert_count,alert_ratio,service_id) VALUES ( ?,?,?,?,?,?,?,? )");
-    $sth->execute( $tag_obj->id , $date , $tag->count,$tag->min,$tag->avg,$tag->alert_count,$tag->alert_ratio,$tag_obj->service_id );
+    my $sth = $driver->dbh->prepare("INSERT INTO tag_log (tag_id,date,count,max,min,avg,alert_count,alert_ratio,service_id) VALUES ( ?,?,?,?,?,?,?,?,?)");
+    $sth->execute( $tag_obj->id , $date , $tag->count,$tag->max,$tag->min,$tag->avg,$tag->alert_count,$tag->alert_ratio,$tag_obj->service_id );
     $sth->finish;
 }
 sub delete_tag_log {
@@ -197,6 +197,7 @@ create table tag_log (
   tag_id int unsigned NOT NULL, 
   date date NOT NULL,
   count int unsigned NOT NULL,
+  max double unsigned NOT NULL,
   min double unsigned NOT NULL,
   avg double unsigned NOT NULL,
   alert_count int unsigned NOT NULL,
