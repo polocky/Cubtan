@@ -40,5 +40,16 @@ sub create {
     return $self->find($name);
 }
 
-
+sub retrieve_all {
+    my $self = shift;
+    my $sth = $self->driver->dbh->prepare('SELECT * FROM service');
+    $sth->execute();
+    my @service_objs = ();
+    for(my $row = $sth->fetchrow_hashref()){
+        my $service_obj =Log::SpeedAnalyze::DB::Row::Service->new($self->driver, $row);
+        push @service_objs , $service_obj;
+    }
+    $sth->finish;
+    return \@service_objs;
+}
 1;
