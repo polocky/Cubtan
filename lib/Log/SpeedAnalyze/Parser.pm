@@ -55,6 +55,8 @@ sub parse {
 sub ignore { 
     my $self = shift;
     my $row = shift;
+
+    return 0 unless $self->config->{ignore_rule};
     for my $name ( keys %{$self->config->{ignore_rule}} ) {
         my $rule = $self->config->{ignore_rule}{$name}  ;
         if($row->{$name} =~ /$rule/){
