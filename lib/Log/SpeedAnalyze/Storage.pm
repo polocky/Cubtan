@@ -117,8 +117,8 @@ sub insert_summary_log {
     my $result = shift;
     my $driver = $self->driver;
     $self->delete_summary_log( $service_obj , $date  );
-    my $sth = $driver->dbh->prepare("INSERT INTO summary_log (service_id,date,count,alert,alert_count,alert_ratio,skip_count) VALUES ( ?,?,?,?,?,?,? )");
-    $sth->execute( $service_obj->id , $date , $result->count, $result->alert , $result->alert_count,$result->alert_ratio,$result->skip_count);
+    my $sth = $driver->dbh->prepare("INSERT INTO summary_log (service_id,date,count,max,min,avg,alert,alert_count,alert_ratio,skip_count,ignore_count) VALUES (?, ?,?,?,?,?,?,?,?,?,?)");
+    $sth->execute( $service_obj->id , $date , $result->count, $result->max,$result->min,$result->avg,$result->alert , $result->alert_count,$result->alert_ratio,$result->skip_count,$result->ignore_count );
     $sth->finish;
 }
 sub delete_summary_log {
@@ -174,10 +174,14 @@ create table summary_log (
   service_id int unsigned NOT NULL,
   date date NOT NULL,
   count int unsigned NOT NULL,
+  max double unsigned NOT NULL,
+  min double unsigned NOT NULL,
+  avg double unsigned NOT NULL,
   alert double unsigned NOT NULL,
   alert_count int unsigned NOT NULL,
   alert_ratio double unsigned NOT NULL,
   skip_count int unsigned NOT NULL,
+  ignore_count int unsigned NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY date_service_id (date,service_id )
 );

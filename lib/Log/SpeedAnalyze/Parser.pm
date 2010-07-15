@@ -52,6 +52,18 @@ sub parse {
     return Log::SpeedAnalyze::Result->new( $result , $self->config ); 
 }
 
+sub ignore { 
+    my $self = shift;
+    my $row = shift;
+    for my $name ( keys %{$self->config->{ignore_rule}} ) {
+        my $rule = $self->config->{ignore_rule}{$name}  ;
+        if($row->{$name} =~ /$rule/){
+            return 1;
+        }
+    }
+    0;
+}
+
 sub tag { shift->config->{tag} || [] }
 sub range { shift->config->{range} }
 sub unit { shift->config->{unit} || '' }
@@ -85,6 +97,11 @@ sub analyze_line {
         return;
     }
 
+    if ($self->ignore($row) ){
+        $result->{ignore} ||=0;
+        $result->{ignore}++;
+        return ;
+    }
 
     if( $self->unit eq '%D' ) {
         $row->{time} = $row->{time} / 1000000;
@@ -92,6 +109,13 @@ sub analyze_line {
 
     $result->{code}->{$row->{code}} ||= 0;
     $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
+
+    $result->{summary}{count} ||=0;
+    $result->{summary}{total} ||=0;
+    $result->{summary}{count}++;
+    $result->{summary}{total}+= $row->{time};
+    $result->{summary}{min} = $row->{time} if !$result->{summary}{min} or $result->{summary}{min} > $row->{time};
+    $result->{summary}{max} = $row->{time} if !$result->{summary}{max} or $result->{summary}{max} < $row->{time};
 
     if( $row->{code} == 200) {
         my $hour = $self->get_hour( $row->{date} );

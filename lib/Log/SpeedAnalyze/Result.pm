@@ -19,9 +19,14 @@ sub setup {
     my $config = shift;
     $self->{alert_count} = $result->{alert_count};
     $self->{skip} = $result->{skip} ;
+    $self->{ignore} = $result->{ignore} ;
     $self->{code} = $result->{code};
     $self->{alert} = $config->{alert};
     $self->{very_slow} = $config->{very_slow} || 0;
+
+    $self->{min} = $result->{summary}{min};
+    $self->{max} = $result->{summary}{max};
+    $self->{avg} = int ($result->{summary}{total} / $result->{summary}{count} * 100 ) / 100 ;
 
     unless ($config->{name}) {
         warn 'new feature: should set name option';
@@ -49,6 +54,11 @@ sub tag {
 sub alert {shift->{alert} || 0 }
 sub alert_count {shift->{alert_count} || 0 }
 sub skip { shift->{skip} || 0 }
+sub ignore_count { shift->{ignore} || 0 }
+sub min { shift->{min} }
+sub max { shift->{max} }
+sub avg { shift->{avg} }
+
 *skip_count = *skip;
 
 sub alert_ratio {

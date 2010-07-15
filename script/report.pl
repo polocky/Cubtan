@@ -21,10 +21,14 @@ my $result = $parser->parse( \@log_files );
 
 my $h = Text::SimpleTable->new([20,'KEY'],[20,'VALUE']);
 $h->row('total(200)', $result->code(200) );
+$h->row('max', $result->max);
+$h->row('min', $result->min);
+$h->row('avg', $result->avg);
 $h->row('alert', $result->alert .' sec');
 $h->row('alert_count', $result->alert_count);
 $h->row('alert_ratio', $result->alert_ratio .'%');
-$h->row('skip', $result->skip );
+$h->row('skip', $result->skip_count );
+$h->row('ignore', $result->ignore_count  );
 $h->hr;
 for(@{$result->code_list}){
 $h->row( $_ , $result->code($_) );
