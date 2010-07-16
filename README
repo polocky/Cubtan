@@ -1,11 +1,11 @@
-This is Perl module Log::SpeedAnalyze.
+This is Perl module Cubtan.
 
 INSTALLATION
 
-Log::SpeedAnalyze installation is straightforward. If your CPAN shell is set up,
+Cubtan installation is straightforward. If your CPAN shell is set up,
 you should just be able to do
 
-    % cpan Log::SpeedAnalyze
+    % cpan Cubtan
 
 Download it, unpack it, then build it as per the usual:
 
@@ -18,9 +18,9 @@ Then install it:
 
 DOCUMENTATION
 
-Log::SpeedAnalyze documentation is available as in POD. So you can do:
+Cubtan documentation is available as in POD. So you can do:
 
-    % perldoc Log::SpeedAnalyze
+    % perldoc Cubtan
 
 to read the documentation online with your favorite pager.
 

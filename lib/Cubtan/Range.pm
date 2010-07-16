@@ -1,4 +1,4 @@
-package Log::SpeedAnalyze::Range;
+package Cubtan::Range;
 use warnings;
 use strict;
 

@@ -1,8 +1,8 @@
-package Log::SpeedAnalyze::DB::Tag;
+package Cubtan::DB::Tag;
 use warnings;
 use strict;
-use base qw/Log::SpeedAnalyze::DB::Base/;
-use Log::SpeedAnalyze::DB::Row::Tag;
+use base qw/Cubtan::DB::Base/;
+use Cubtan::DB::Row::Tag;
 
 sub new {
     my $class = shift;
@@ -30,7 +30,7 @@ sub find {
     my $row = $sth->fetchrow_hashref;
     $sth->finish;
     if($row){
-        return Log::SpeedAnalyze::DB::Row::Tag->new( $self->service_obj ,$row );
+        return Cubtan::DB::Row::Tag->new( $self->service_obj ,$row );
     }
     else {
         return;
@@ -53,7 +53,7 @@ sub retrieve_all {
     $sth->execute( $self->service_obj->id );
     my @tag_objs = ();
     while(my $row = $sth->fetchrow_hashref()){
-        my $tag_obj =Log::SpeedAnalyze::DB::Row::Tag->new($self->service_obj, $row);
+        my $tag_obj =Cubtan::DB::Row::Tag->new($self->service_obj, $row);
         push @tag_objs , $tag_obj;
     }
     $sth->finish;

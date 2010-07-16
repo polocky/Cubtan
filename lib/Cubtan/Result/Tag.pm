@@ -1,4 +1,4 @@
-package Log::SpeedAnalyze::Result::Tag;
+package Cubtan::Result::Tag;
 use warnings;
 use strict;
 
@@ -53,7 +53,7 @@ sub setup_alert_ratio{
 
 =head1 NAME
 
-Log::SpeedAnalyze::Result::Tag - Tag Obj.
+Cubtan::Result::Tag - Tag Obj.
 
 =head1 METHOD
 

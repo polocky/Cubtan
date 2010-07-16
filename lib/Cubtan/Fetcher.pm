@@ -1,4 +1,4 @@
-package Log::SpeedAnalyze::Fetcher;
+package Cubtan::Fetcher;
 use warnings;
 use strict;
 use Net::SCP;
@@ -42,11 +42,11 @@ sub fetch {
 
 =head1 NAME
 
-Log::SpeedAnalyze::Fetcher - fetcher.
+Cubtan::Fetcher - fetcher.
 
 =head1 SYNOPSIS
 
- my $fetcher = Log::SpeedAnalyze::Fetcher->new( { config => 'wiki_fetcher.pl' } );
+ my $fetcher = Cubtan::Fetcher->new( { config => 'wiki_fetcher.pl' } );
  my $save_path = $fetcher->fetch('2003-12-15');
 
 wiki_fetcher.pl

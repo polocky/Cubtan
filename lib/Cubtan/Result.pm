@@ -1,7 +1,7 @@
-package Log::SpeedAnalyze::Result;
+package Cubtan::Result;
 use warnings;
 use strict;
-use Log::SpeedAnalyze::Result::Tag;
+use Cubtan::Result::Tag;
 
 sub new {
     my $class = shift;
@@ -41,7 +41,7 @@ sub setup {
     }
 
     for my $tag ( keys %{$result->{tag}} ){
-        $self->{tag}{$tag} = Log::SpeedAnalyze::Result::Tag->new( $result->{tag}{$tag} );
+        $self->{tag}{$tag} = Cubtan::Result::Tag->new( $result->{tag}{$tag} );
     }
 }
 

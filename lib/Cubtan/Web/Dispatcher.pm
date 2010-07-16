@@ -1,9 +1,9 @@
-package Log::SpeedAnalyze::Web::Dispatcher;
+package Cubtan::Web::Dispatcher;
 use warnings;
 use strict;
 use Plack::Request;
 use Plack::Response;
-use Log::SpeedAnalyze::Web::Controller;
+use Cubtan::Web::Controller;
 use Text::MicroTemplate::Extended;
 
 
@@ -38,7 +38,7 @@ sub dispatch {
         my $path_info = $request->env->{PATH_INFO} ;
         my ($method_name,$args) =  $self->lookup( $path_info);
         my $res = Plack::Response->new(200);
-        my $controller = Log::SpeedAnalyze::Web::Controller->new({
+        my $controller = Cubtan::Web::Controller->new({
             driver => $self->driver,
             req => $request, 
             res => $res,

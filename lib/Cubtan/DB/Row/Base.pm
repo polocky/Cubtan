@@ -1,4 +1,4 @@
-package Log::SpeedAnalyze::DB::Row::Base;
+package Cubtan::DB::Row::Base;
 use warnings;
 use strict;
 

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use FindBin::libs;
-use Log::SpeedAnalyze::Fetcher;
+use Cubtan::Fetcher;
 use Getopt::Long;
 use DateTime;
 
@@ -20,7 +20,7 @@ unless($arg){
 
 }
 
-my $fetcher = Log::SpeedAnalyze::Fetcher->new( { config => $config } );
+my $fetcher = Cubtan::Fetcher->new( { config => $config } );
 $fetcher->fetch($arg);
 
 __END__

@@ -1,8 +1,8 @@
-package Log::SpeedAnalyze::Storage;
+package Cubtan::Storage;
 use warnings;
 use strict;
-use Log::SpeedAnalyze::Driver;
-use Log::SpeedAnalyze::DB::Service;
+use Cubtan::Driver;
+use Cubtan::DB::Service;
 
 sub new {
     my $class  = shift;
@@ -15,9 +15,9 @@ sub new {
 sub setup {
     my $self = shift;
     my $driver_args = shift;
-    my $driver = Log::SpeedAnalyze::Driver->new( $driver_args );
+    my $driver = Cubtan::Driver->new( $driver_args );
     $self->{driver} = $driver;
-    $self->{service_db} = Log::SpeedAnalyze::DB::Service->new( $self->driver );
+    $self->{service_db} = Cubtan::DB::Service->new( $self->driver );
 }
 
 sub driver { shift->{driver} }
@@ -135,12 +135,12 @@ sub delete_summary_log {
 
 =head1 NAME
 
-Log::SpeedAnalyze::Storage - storage
+Cubtan::Storage - storage
 
 
 =head1 NAME
 
- my $storage = Log::SpeedAnalyze::Storage->new( { config => 'storage.pl' });
+ my $storage = Cubtan::Storage->new( { config => 'storage.pl' });
 
  $storage->store({
     service_id => 1,

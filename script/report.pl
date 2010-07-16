@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use FindBin::libs;
-use Log::SpeedAnalyze::Parser;
+use Cubtan::Parser;
 use Text::SimpleTable;
 use Getopt::Long;
 
@@ -16,7 +16,7 @@ GetOptions(
     "on_very_slow_log" => \$on_very_slow_log,
 );
 
-my $parser = Log::SpeedAnalyze::Parser->new( { config_file => $config_file } );
+my $parser = Cubtan::Parser->new( { config_file => $config_file } );
 my $result = $parser->parse( \@log_files );
 
 my $h = Text::SimpleTable->new([20,'KEY'],[20,'VALUE']);

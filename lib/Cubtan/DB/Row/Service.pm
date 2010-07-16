@@ -1,15 +1,15 @@
-package Log::SpeedAnalyze::DB::Row::Service;
+package Cubtan::DB::Row::Service;
 use warnings;
 use strict;
-use base qw(Log::SpeedAnalyze::DB::Row::Base);
-use Log::SpeedAnalyze::DB::Tag;
+use base qw(Cubtan::DB::Row::Base);
+use Cubtan::DB::Tag;
 
 sub new {
     my $class = shift;
     my $driver = shift;
     my $row = shift;
     my $self = bless { row => $row , driver => $driver } , $class;
-    my $tag_db = Log::SpeedAnalyze::DB::Tag->new( $self );
+    my $tag_db = Cubtan::DB::Tag->new( $self );
     $self->{tag_db} = $tag_db;
     return $self;
 }

@@ -1,4 +1,4 @@
-Revision history for Perl extension Log::SpeedAnalyze
+Revision history for Perl extension Cubtan
 
 0.02
     - multi file parse support.
@@ -7,7 +7,8 @@ Revision history for Perl extension Log::SpeedAnalyze
     - code ref support for format.
     - add Fetcher
     - deprecated config_file option for Parser. use config instead.
-    - adding script/store.pl for store result into database.
+    - adding script/cubtan.pl for store result into database.
+    - rename Log::SpeedAnalyze to Cubtan
 
 0.01    Sun Jul  4 17:06:41 2010
     - original version

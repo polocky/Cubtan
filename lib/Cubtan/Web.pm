@@ -1,9 +1,9 @@
-package Log::SpeedAnalyze::Web;
+package Cubtan::Web;
 use warnings;
 use strict;
 use Plack::Builder;
-use Log::SpeedAnalyze::Driver;
-use Log::SpeedAnalyze::Web::Dispatcher;
+use Cubtan::Driver;
+use Cubtan::Web::Dispatcher;
 
 sub new {
     my $class = shift;
@@ -16,8 +16,8 @@ sub setup {
     my $self = shift;
     my $config_file = shift;
     my $config = do ( $config_file );
-    my $driver = Log::SpeedAnalyze::Driver->new( $config->{driver} );
-    my $dispatcher = Log::SpeedAnalyze::Web::Dispatcher->new( { driver => $driver , view_home => $config->{view_home} } );
+    my $driver = Cubtan::Driver->new( $config->{driver} );
+    my $dispatcher = Cubtan::Web::Dispatcher->new( { driver => $driver , view_home => $config->{view_home} } );
     $self->{dispatcher} = $dispatcher;
     my $root_path = $config->{view_home};
     $self->{root_path} = $root_path;

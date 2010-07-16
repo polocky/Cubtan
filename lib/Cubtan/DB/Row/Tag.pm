@@ -1,7 +1,7 @@
-package Log::SpeedAnalyze::DB::Row::Tag;
+package Cubtan::DB::Row::Tag;
 use warnings;
 use strict;
-use base qw(Log::SpeedAnalyze::DB::Row::Base);
+use base qw(Cubtan::DB::Row::Base);
 
 sub new {
     my $class = shift;

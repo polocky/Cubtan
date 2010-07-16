@@ -1,4 +1,4 @@
-package Log::SpeedAnalyze::Driver;
+package Cubtan::Driver;
 use warnings;
 use strict;
 use DBI;

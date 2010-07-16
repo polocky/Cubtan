@@ -1,4 +1,4 @@
-package Log::SpeedAnalyze;
+package Cubtan;
 use strict;
 use warnings;
 our $VERSION = '0.01';
@@ -8,15 +8,15 @@ __END__
 
 =head1 NAME
 
-Log::SpeedAnalyze -
+Cubtan -
 
 =head1 SYNOPSIS
 
-  use Log::SpeedAnalyze;
+  use Cubtan;
 
 =head1 DESCRIPTION
 
-Log::SpeedAnalyze is
+Cubtan is
 
 =head1 AUTHOR
 

@@ -1,8 +1,8 @@
-package Log::SpeedAnalyze::DB::Service;
+package Cubtan::DB::Service;
 use warnings;
 use strict;
-use base qw/Log::SpeedAnalyze::DB::Base/;
-use Log::SpeedAnalyze::DB::Row::Service;
+use base qw/Cubtan::DB::Base/;
+use Cubtan::DB::Row::Service;
 
 sub find_or_create {
     my $self = shift;
@@ -23,7 +23,7 @@ sub lookup {
     my $row = $sth->fetchrow_hashref;
     $sth->finish;
     if($row){
-        return Log::SpeedAnalyze::DB::Row::Service->new( $driver ,$row );
+        return Cubtan::DB::Row::Service->new( $driver ,$row );
     }
     else {
         return;
@@ -39,7 +39,7 @@ sub find {
     my $row = $sth->fetchrow_hashref;
     $sth->finish;
     if($row){
-        return Log::SpeedAnalyze::DB::Row::Service->new( $driver ,$row );
+        return Cubtan::DB::Row::Service->new( $driver ,$row );
     }
     else {
         return;
@@ -62,7 +62,7 @@ sub retrieve_all {
     $sth->execute();
     my @service_objs = ();
     while(my $row = $sth->fetchrow_hashref()){
-        my $service_obj =Log::SpeedAnalyze::DB::Row::Service->new($self->driver, $row);
+        my $service_obj =Cubtan::DB::Row::Service->new($self->driver, $row);
         push @service_objs , $service_obj;
     }
     $sth->finish;

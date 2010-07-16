@@ -1,6 +1,6 @@
 use inc::Module::Install;
-name 'Log-SpeedAnalyze';
-all_from 'lib/Log/SpeedAnalyze.pm';
+name 'Cubtan';
+all_from 'lib/Cubtan.pm';
 
 # requires '';
 

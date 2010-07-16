@@ -1,8 +1,8 @@
-package Log::SpeedAnalyze::Parser;
+package Cubtan::Parser;
 
 use warnings;
 use strict;
-use Log::SpeedAnalyze::Result;
+use Cubtan::Result;
 use IO::Uncompress::Gunzip;
 
 sub new {
@@ -49,7 +49,7 @@ sub parse {
         }
     }
 
-    return Log::SpeedAnalyze::Result->new( $result , $self->config ); 
+    return Cubtan::Result->new( $result , $self->config ); 
 }
 
 sub ignore { 
@@ -206,12 +206,12 @@ sub get_hour {
 
 =head1 NAME
 
-Log::SpeedAnalyze::Parser
+Cubtan::Parser
 
 =head1 SYNOPSIS
 
- use Log::SpeedAnalyze::Parser;
- my $parser = Log::SpeedAnalyze::Parser->new( { config => 'conf.pl' } );
+ use Cubtan::Parser;
+ my $parser = Cubtan::Parser->new( { config => 'conf.pl' } );
  my $result = $parser->parse( 'logs/access_log' );
 
  # conf.pl

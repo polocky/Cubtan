@@ -3,7 +3,7 @@ use warnings;
 use Test::More;
 
 BEGIN {
-      use_ok( 'Log::SpeedAnalyze' );
+      use_ok( 'Cubtan' );
 }
 
 done_testing();
