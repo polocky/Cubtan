@@ -6,6 +6,8 @@
 <script language="javascript" type="text/javascript" src="/static/js/jqplot/jquery.jqplot.min.js"></script>
 <script type="text/javascript" src="/static/js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
 <script type="text/javascript" src="/static/js/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+<script type="text/javascript" src="/static/js/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.jqplot.css" />
 </head>
 <body>
 <div id="header">

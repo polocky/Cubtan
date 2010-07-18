@@ -17,7 +17,7 @@ sub setup {
     my $config_file = shift;
     my $config = do ( $config_file );
     my $driver = Cubtan::Driver->new( $config->{driver} );
-    my $dispatcher = Cubtan::Web::Dispatcher->new( { driver => $driver , view_home => $config->{view_home} } );
+    my $dispatcher = Cubtan::Web::Dispatcher->new( { driver => $driver , view_home => $config->{view_home} , config => $config } );
     $self->{dispatcher} = $dispatcher;
     my $root_path = $config->{view_home};
     $self->{root_path} = $root_path;

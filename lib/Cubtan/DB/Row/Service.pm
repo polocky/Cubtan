@@ -31,4 +31,19 @@ sub get_tag_objs {
     return $self->tag_db->retrieve_all();
 }
 
+sub get_chart_summary_log {
+    my $self = shift;
+    my $range_obj = shift;
+    my $key = shift || 'avg';
+
+    my $sth = $self->driver->dbh->prepare("SELECT $key,date FROM summary_log WHERE service_id = ? AND date >= ? AND date <= ?");
+    $sth->execute( $self->id , $range_obj->start->ymd , $range_obj->end->ymd );
+    my $log = {};
+    while(my $row = $sth->fetchrow_hashref ) {
+        $log->{$row->{date}} = $row->{$key};
+    }
+    $sth->finish;
+    return $log ;
+}
+
 1;

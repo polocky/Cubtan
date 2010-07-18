@@ -4,6 +4,7 @@ use strict;
 use Plack::Request;
 use Plack::Response;
 use Cubtan::Web::Controller;
+use Cubtan::Fields;
 use Text::MicroTemplate::Extended;
 
 
@@ -25,8 +26,11 @@ sub setup {
         '/' => 'dispatch_root',
     };
     $self->{method_maping} = $method_maping;
+    
+    $self->{config} = $args->{config};
 }
 
+sub config { shift->{config}}
 sub driver { shift->{driver} }
 sub view_home { shift->{view_home} }
 
@@ -43,6 +47,7 @@ sub dispatch {
             req => $request, 
             res => $res,
             args => $args, 
+            config => $self->config,
         });
         $controller->$method_name();
 
