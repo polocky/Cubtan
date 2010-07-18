@@ -7,7 +7,7 @@
 </ul>
 
 
-<div id="chart-total-page"></div>
+<div id="chart-total-page" style="height:500px"></div>
 
 
 <table class="listing">

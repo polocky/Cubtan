@@ -32,7 +32,7 @@ sub setup {
         warn 'new feature: should set name option';
     }
 
-    $self->{name} = $config->{name} || 'unkown';
+    $self->{name} = $config->{name} || 'unknown';
 
     if($self->{very_slow} ) {
         $self->{very_slow_hourly} = $result->{very_slow}{hour};

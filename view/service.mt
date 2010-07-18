@@ -1,33 +1,73 @@
 ? extends 'base';
 ? block content => sub {
 <h2>Service : <?= $service_obj->name ?></h2>
+
+<div>
+<form>
+    <input type="text" name="start" value="<?= $range_obj->start->ymd ?>" />
+    - <input type="text" name="end" value="<?= $range_obj->end->ymd ?>" />
+    <input type="submit" value="検索" />
+</form>
+</div>
+
+<div id="avg-chart" style="height:500px"></div>
 <div>
 ? for my $tag_obj ( @{$service_obj->get_tag_objs} ){
-    <h3><?= $tag_obj->name ?></h3>
-? }
-<div>
-    <div class="jqPlot" id="chart1" style="height:320px; width:480px;"></div>
+? my $chart_obj = $tag_obj->get_tag_range_log_chart_obj($range_obj);
+    <h3><?=  Text::MicroTemplate::encoded_string $tag_fields->get_html_color($tag_obj->name) ?><?= $tag_fields->get_label($tag_obj->name) ?></h3>
+    <div id="avg-tag-chart-<?= $tag_obj->name ?>"></div>
     <script>
-line1 = [1,4, 9, 16];
-plot2 = $.jqplot('chart1', [line1], {
-    legend:{show:true, location:'ne', xoffset:55},
-    title:'Bar Chart With Options',
-    seriesDefaults:{
-        renderer:$.jqplot.BarRenderer, 
-        rendererOptions:{barPadding: 8, barMargin: 20}
-    },
-    series:[
-        {label:'Profits'}, 
-        {label:'Expenses'}, 
-        {label:'Sales'}
-    ],
-    axes:{
-        xaxis:{
-            renderer:$.jqplot.CategoryAxisRenderer, 
-            ticks:['1st Qtr', '2nd Qtr', '3rd Qtr', '4th Qtr']
-        }, 
-        yaxis:{min:0}
+    $.jqplot('avg-tag-chart-<?= $tag_obj->name ?>',<?=  Text::MicroTemplate::encoded_string $chart_obj->get_data_part() ; ?>
+    ,{
+        legend: {show: true, location: 'nw'},
+        title: 'レスポンスレンジ率',
+        series:<?= Text::MicroTemplate::encoded_string $chart_obj->get_series_part()  ?>,
+        axes:{
+            xaxis:{
+                renderer:$.jqplot.DateAxisRenderer,
+                tickInterval:'1 day' ,
+                tickOptions:{formatString:'%d'},
+                min:'<?= $range_obj->start->ymd ?>',
+                max:'<?= $range_obj->end->ymd ?>'
+            },
+            yaxis:{
+                numberTicks:12 ,
+                tickOptions:{formatString:'%d%'},
+                max:100,
+                min:0 
+            }
+        }
     }
-});
+    ); 
+    </script>
+? }
+</div>
+
+<script>
+    $.jqplot('avg-chart',  <?= Text::MicroTemplate::encoded_string $avg_chart->get_data_part(); ?>
+    ,{
+        title:'レスポンス速度平均グラフ[<?= $range_obj->start->ymd('/') ?> - <?= $range_obj->end->ymd('/') ?>]',
+        axes:{
+            xaxis:{
+                renderer:$.jqplot.DateAxisRenderer,
+                tickInterval:'1 day' ,
+                tickOptions:{formatString:'%d'},
+                min:'<?= $range_obj->start->ymd ?>',
+                max:'<?= $range_obj->end->ymd ?>'
+            },
+            yaxis:{
+                autoscale:true,
+                tickOptions:{formatString:'%.02f'}
+            }
+        },
+        legend:{  
+              show:true,  
+              location: 'nw',  
+              },
+        series:<?= Text::MicroTemplate::encoded_string $avg_chart->get_series_part()  ?>
+    }
+    );
 </script>
+
+
 ? } 

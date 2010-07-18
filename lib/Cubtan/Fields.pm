@@ -16,12 +16,15 @@ sub field {
         return $field;
     }
     else {
-        return {};
+        return {
+            color => 'black',
+            label => 'unknown',
+        };
     }
 }
 
 sub get_field_keys {
-    my @keys= keys %{shift->{fields}};
+    my @keys= sort keys %{shift->{fields}};
     return \@keys;
 }
 

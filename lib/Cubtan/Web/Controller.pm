@@ -6,6 +6,37 @@ use Cubtan::DateTime;
 use Cubtan::DateRange;
 use Cubtan::Web::JqpLot;
 
+sub dispatch_service {
+    my $self = shift;
+    $self->{file} = 'service';
+    my $range_obj = $self->get_target_range();
+    my $service_id = $self->args->[0];
+    my $service_db = Cubtan::DB::Service->new( $self->driver );
+    my $service_obj = $service_db->lookup( $service_id) or die 'NOT FOUND';;
+    $self->stash->{service_obj} = $service_obj;
+
+    my $service_config = $self->get_service_config( $service_obj );
+
+    my $tag_fields = $self->get_tag_fields( $service_config );
+
+    my $hash = {};
+    my $tag_objs = $service_obj->get_tag_objs();
+    for(@$tag_objs){
+        $hash->{$_->name} = $_->get_chart_tag_log($range_obj , 'avg' );
+    }
+
+    my $avg_chart
+        = Cubtan::Web::JqpLot->new({
+            fields => $tag_fields,
+            range => $range_obj->range_array,
+            data => $hash,
+        })->create;
+    $self->stash->{tag_fields} = $tag_fields;
+    $self->stash->{avg_chart} = $avg_chart;
+    $self->stash->{range_obj} = $range_obj;
+
+}
+
 sub dispatch_root {
     my $self = shift;
     $self->{file} = 'root';
@@ -32,6 +63,7 @@ sub dispatch_root {
 
 }
 
+
 sub get_service_fields {
     my $self = shift;
     my $fields = {};
@@ -43,14 +75,6 @@ sub get_service_fields {
 }
 
 
-sub dispatch_service {
-    my $self = shift;
-    $self->{file} = 'service';
-    my $service_id = $self->args->[0];
-    my $service_db = Cubtan::DB::Service->new( $self->driver );
-    my $service_obj = $service_db->lookup( $service_id) or die 'NOT FOUND';;
-    $self->stash->{service_obj} = $service_obj;
-}
 
 sub get_target_range {
     my $self = shift;
@@ -74,6 +98,19 @@ sub get_target_range {
     }
 }
 
+
+sub get_service_config {
+    my $self = shift;
+    my $service_obj = shift;
+    for( @{$self->config->{service}} ){
+        if( $_->{parser}{name} eq $service_obj->name ) {
+            return $_;
+        }
+    }
+
+    return {};
+}
+
 sub get_target_day {
     my $self = shift;
     my $ymd = $self->req->param('ymd');
@@ -87,6 +124,16 @@ sub get_target_day {
     return $date;
 }
 
+sub get_tag_fields {
+    my $self = shift;
+    my $service_config = shift;
+    my $fields = {};
+    for( @{$service_config->{parser}{tag}} ){
+        $fields->{$_->{name}} = { color => $_->{color} , label => $_->{label} , comment => '' } ;
+    }
+    return Cubtan::Fields->new($fields);
+    
+}
 sub new {
     my $class = shift;
     my $args = shift;
