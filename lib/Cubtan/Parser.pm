@@ -112,14 +112,14 @@ sub analyze_line {
     $result->{code}->{$row->{code}} ||= 0;
     $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
 
-    $result->{summary}{count} ||=0;
-    $result->{summary}{total} ||=0;
-    $result->{summary}{count}++;
-    $result->{summary}{total}+= $row->{time};
-    $result->{summary}{min} = $row->{time} if !$result->{summary}{min} or $result->{summary}{min} > $row->{time};
-    $result->{summary}{max} = $row->{time} if !$result->{summary}{max} or $result->{summary}{max} < $row->{time};
+    if( $row->{code} >= 200 && $row->{code} < 400 ) {
+        $result->{summary}{count} ||=0;
+        $result->{summary}{total} ||=0;
+        $result->{summary}{count}++;
+        $result->{summary}{total}+= $row->{time};
+        $result->{summary}{min} = $row->{time} if !$result->{summary}{min} or $result->{summary}{min} > $row->{time};
+        $result->{summary}{max} = $row->{time} if !$result->{summary}{max} or $result->{summary}{max} < $row->{time};
 
-    if( $row->{code} == 200) {
         my $hour = $self->get_hour( $row->{date} );
 
         

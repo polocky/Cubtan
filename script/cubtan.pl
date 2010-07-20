@@ -10,9 +10,11 @@ use DateTime;
 
 my $config_file = '';
 my $date = '';
+my $name = '';
 GetOptions(
     "config=s" => \$config_file,
     "date=s" => \$date,
+    "name=s" => \$name,
 );
 
 unless($date){
@@ -25,6 +27,7 @@ my $config = do($config_file);
 my $storage = Cubtan::Storage->new( $config->{driver}  );
 
 for my $service_config  (@{$config->{service}}) {
+    next if ($name && $service_config->{parser}{name} ne $name);
     my $fetcher = Cubtan::Fetcher->new( { config => $service_config->{fetcher} } );
     # XXX $date = $args (this means , does not support logrotate format such as access_log.1 )
     # maybe spport it in the future or not.

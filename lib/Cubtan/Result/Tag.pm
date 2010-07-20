@@ -41,11 +41,14 @@ sub setup_ranges {
 
 sub setup_avg{
     my $self = shift;
+    return 0 unless $self->count;
+    return 0 unless $self->total;
     return int ($self->total / $self->count * 100 ) / 100 ;
 }
 sub setup_alert_ratio{
     my $self = shift;
     return 0 unless $self->alert_count;
+    return 0 unless $self->count;
     int($self->alert_count / $self->count * 100 * 100 ) / 100 ;
 }
 

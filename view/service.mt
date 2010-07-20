@@ -28,6 +28,10 @@
             yaxis:{
                 autoscale:true,
                 tickOptions:{formatString:'%.02f'}
+            },
+            y2axis:{
+                autoscale:true,
+                tickOptions:{formatString:'%d'}
             }
         },
         legend:{  
@@ -42,6 +46,7 @@
 
 <div>
 ? for my $tag_obj ( @{$service_obj->get_tag_objs} ){
+? # last; # too much memory...
 ? my $chart_obj = $tag_obj->get_tag_range_log_chart_obj($range_obj);
     <h3><?=  Text::MicroTemplate::encoded_string $tag_fields->get_html_color($tag_obj->name) ?><?= $tag_fields->get_label($tag_obj->name) ?></h3>
     <div id="avg-tag-chart-<?= $tag_obj->name ?>"></div>
@@ -64,6 +69,10 @@
                 tickOptions:{formatString:'%d%'},
                 max:100,
                 min:0 
+            },
+            y2axis:{
+                autoscale:true,
+                tickOptions:{formatString:'%d'}
             }
         }
     }

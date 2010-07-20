@@ -20,7 +20,7 @@ my $parser = Cubtan::Parser->new( { config_file => $config_file } );
 my $result = $parser->parse( \@log_files );
 
 my $h = Text::SimpleTable->new([20,'KEY'],[20,'VALUE']);
-$h->row('total(200)', $result->code(200) );
+$h->row('count', $result->count );
 $h->row('max', $result->max);
 $h->row('min', $result->min);
 $h->row('avg', $result->avg);

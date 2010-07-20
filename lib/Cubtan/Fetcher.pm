@@ -15,7 +15,7 @@ sub setup {
     my $self = shift;
     my $args = shift;
     my $config;
-    if( ref $args eq 'HASH' ) {
+    if( ref $args->{config} eq 'HASH' ) {
         $config = $args->{config};
     }
     else {

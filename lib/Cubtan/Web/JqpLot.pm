@@ -12,14 +12,38 @@ sub new {
 sub create {
     my $self = shift;
     my @data_part = ();
+    my @series_part = ();
+    my $series_part1 = $self->create_series_part;
+    my @data_part1 = ();
     for my $field ( @{$self->fields->get_field_keys}){
-        push @data_part , $self->create_data_part( $field ) ;
+        push @data_part1 , $self->create_data_part( $field ,$self->{data} ) ;
     }
-    $self->{data_part} = Cubtan::Utils::obj2json( \@data_part );
-    $self->{series_part} = Cubtan::Utils::obj2json( $self->create_series_part );
 
+    if( $self->{data2} ) {
+        my @data_part2 = ();
+        for my $field ( @{$self->fields->get_field_keys}){
+            push @data_part2 , $self->create_data_part( $field ,$self->{data2} ) ;
+        }
+        push @data_part ,@data_part1 ,@data_part2;
+        my $series_part2 =  $self->create_series_part;
+        for (@$series_part2 ) {
+            $_->{label} = 'Count '.$_->{label} ;
+            $_->{yaxis} = 'y2axis';
+            $_->{showLine} = 0;
+            $_->{markerOptions} = { style => 'Square' } ;
+        }
+        push @series_part ,@$series_part1 ,@$series_part2 ;
+    }
+    else {
+        @series_part = @$series_part1;
+        @data_part = @data_part1;
+    }
+
+    $self->{data_part} = Cubtan::Utils::obj2json( \@data_part );
+    $self->{series_part} = Cubtan::Utils::obj2json( \@series_part );
     $self;
 }
+
 sub get_data_part{
     shift->{data_part};
 }
@@ -33,8 +57,8 @@ sub fields { shift->{fields} }
 sub create_data_part {
     my $self  = shift;
     my $target = shift;
+    my $hash  = shift;
     my $range = $self->{range};
-    my $hash  = $self->{data};
     my @data = ();
     for my $date (@$range){
         push @data , [ $date , $hash->{$target}{$date} || 0 ];

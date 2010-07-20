@@ -26,7 +26,8 @@ sub setup {
 
     $self->{min} = $result->{summary}{min};
     $self->{max} = $result->{summary}{max};
-    $self->{avg} = int ($result->{summary}{total} / $result->{summary}{count} * 100 ) / 100 ;
+    $self->{count} = $result->{summary}{count};
+    $self->{avg} = int ($result->{summary}{total} / $self->count * 100 ) / 100 ;
 
     unless ($config->{name}) {
         warn 'new feature: should set name option';
@@ -67,7 +68,7 @@ sub alert_ratio {
     my $total = $self->code('200');
     int( $self->alert_count / $total * 100 ) ;
 }
-sub count { shift->code(200) }
+sub count { shift->{count} || 0 }
 sub code { 
     my $self = shift;
     my $code = shift;

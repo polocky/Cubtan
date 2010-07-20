@@ -46,13 +46,17 @@
             },
             yaxis:{
                 autoscale:true,
-                tickOptions:{formatString:'%.02f'},
+                tickOptions:{formatString:'%.02f'}
+            },
+            y2axis:{
+                autoscale:true,
+                tickOptions:{formatString:'%d'}
             }
         },
         legend:{  
               show:true,  
-              location: 'nw',  
-              },
+              location: 'nw'
+        },
         series:<?= Text::MicroTemplate::encoded_string $avg_chart->get_series_part()  ?>
     }
     );

@@ -25,11 +25,18 @@ sub dispatch_service {
         $hash->{$_->name} = $_->get_chart_tag_log($range_obj , 'avg' );
     }
 
+# not balanced.
+#    my $hash2 = {};
+#    for(@$tag_objs){
+#        $hash2->{$_->name} = $_->get_chart_tag_log($range_obj , 'count' );
+#    }
+
     my $avg_chart
         = Cubtan::Web::JqpLot->new({
             fields => $tag_fields,
             range => $range_obj->range_array,
             data => $hash,
+            #data2 => $hash2,
         })->create;
     $self->stash->{tag_fields} = $tag_fields;
     $self->stash->{avg_chart} = $avg_chart;
@@ -51,11 +58,17 @@ sub dispatch_root {
     $self->stash->{service_objs} = $service_objs;
     $self->stash->{service_fields} = $service_fields;
 
+#    my $hash2 = {};
+#    for(@$service_objs){
+#        $hash2->{$_->name} = $_->get_chart_summary_log($range_obj , 'count' );
+#    }
+
     my $avg_chart
         = Cubtan::Web::JqpLot->new({
             fields => $service_fields,
             range => $range_obj->range_array,
             data => $hash,
+#            data2 => $hash2,
         })->create;
 
     $self->stash->{avg_chart} = $avg_chart;

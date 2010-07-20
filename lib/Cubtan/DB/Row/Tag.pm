@@ -51,6 +51,7 @@ sub get_tag_range_log_chart_obj {
     my $sth = $self->driver->dbh->prepare("SELECT range,date,count FROM tag_range_log WHERE tag_id = ? AND date >= ? AND date <= ?");
     $sth->execute( $self->id , $range_obj->start->ymd , $range_obj->end->ymd );
     my $hash = {};
+    my $hash2 = {};
     my $data = {};
     while(my $row = $sth->fetchrow_hashref ) {
         $data->{count}{$row->{range}}{$row->{date}} = $row->{count};
@@ -62,6 +63,7 @@ sub get_tag_range_log_chart_obj {
     for my $range (keys %{$data->{count}} ){
         for my $date (keys %{$data->{count}{$range}} ){
             $hash->{$range}{$date} = int ( $data->{count}{$range}{$date} / $data->{max}{$date}  * 100 * 100 ) / 100;
+            #$hash2->{$range}{$date} =  $data->{count}{$range}{$date};
         }
     }
     
@@ -78,6 +80,7 @@ sub get_tag_range_log_chart_obj {
             fields => $fields_obj,
             range => $range_obj->range_array,
             data => $hash,
+            #hash2 => $hash2,
         })->create;
 
 }
