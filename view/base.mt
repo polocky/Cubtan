@@ -22,7 +22,7 @@
 <? block content => sub {} ?>
 </div>
 <div id="footer">
-<address>&copy; polocky & cubtan</address>
+<address>&copy; polocky & cubtan  ~ <a href="http://github.com/polocky/Cubtan/">Cubtan<?= $version ?></a> ~ </address>
 </div>
 </body>
 </html>

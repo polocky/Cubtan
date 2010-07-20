@@ -11,6 +11,35 @@
 </div>
 
 <div id="avg-chart" style="height:500px"></div>
+
+
+<script>
+    $.jqplot('avg-chart',  <?= Text::MicroTemplate::encoded_string $avg_chart->get_data_part(); ?>
+    ,{
+        title:'レスポンス速度平均グラフ[<?= $range_obj->start->ymd('/') ?> - <?= $range_obj->end->ymd('/') ?>]',
+        axes:{
+            xaxis:{
+                renderer:$.jqplot.DateAxisRenderer,
+                tickInterval:'1 day' ,
+                tickOptions:{formatString:'%d'},
+                min:'<?= $range_obj->start->ymd ?>',
+                max:'<?= $range_obj->end->ymd ?>'
+            },
+            yaxis:{
+                autoscale:true,
+                tickOptions:{formatString:'%.02f'}
+            }
+        },
+        legend:{  
+              show:true,  
+              location: 'nw',  
+              },
+        series:<?= Text::MicroTemplate::encoded_string $avg_chart->get_series_part()  ?>
+    }
+    );
+</script>
+
+
 <div>
 ? for my $tag_obj ( @{$service_obj->get_tag_objs} ){
 ? my $chart_obj = $tag_obj->get_tag_range_log_chart_obj($range_obj);
@@ -43,31 +72,6 @@
 ? }
 </div>
 
-<script>
-    $.jqplot('avg-chart',  <?= Text::MicroTemplate::encoded_string $avg_chart->get_data_part(); ?>
-    ,{
-        title:'レスポンス速度平均グラフ[<?= $range_obj->start->ymd('/') ?> - <?= $range_obj->end->ymd('/') ?>]',
-        axes:{
-            xaxis:{
-                renderer:$.jqplot.DateAxisRenderer,
-                tickInterval:'1 day' ,
-                tickOptions:{formatString:'%d'},
-                min:'<?= $range_obj->start->ymd ?>',
-                max:'<?= $range_obj->end->ymd ?>'
-            },
-            yaxis:{
-                autoscale:true,
-                tickOptions:{formatString:'%.02f'}
-            }
-        },
-        legend:{  
-              show:true,  
-              location: 'nw',  
-              },
-        series:<?= Text::MicroTemplate::encoded_string $avg_chart->get_series_part()  ?>
-    }
-    );
-</script>
 
 
 ? } 

@@ -6,6 +6,8 @@ use Plack::Response;
 use Cubtan::Web::Controller;
 use Cubtan::Fields;
 use Text::MicroTemplate::Extended;
+use Cubtan;
+use Encode;
 
 
 sub new {
@@ -50,6 +52,7 @@ sub dispatch {
             config => $self->config,
         });
         $controller->$method_name();
+        $controller->stash->{version} = $Cubtan::VERSION;
 
         my $mt = Text::MicroTemplate::Extended->new(
             include_path  => [ $self->view_home ],
@@ -58,6 +61,7 @@ sub dispatch {
 
         my $body = $mt->render_file( $controller->file );
         $res->content_type('text/html') unless $res->content_type;
+        $body = encode('utf8',$body);
         $body ? $res->body($body) : $res->body(':-)');
         return $res->finalize;
     }
