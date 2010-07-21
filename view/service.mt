@@ -46,15 +46,13 @@
 
 <div>
 ? for my $tag_obj ( @{$service_obj->get_tag_objs} ){
-? # last; # too much memory...
 ? my $chart_obj = $tag_obj->get_tag_range_log_chart_obj($range_obj);
-    <h3><?=  Text::MicroTemplate::encoded_string $tag_fields->get_html_color($tag_obj->name) ?><?= $tag_fields->get_label($tag_obj->name) ?></h3>
     <div id="avg-tag-chart-<?= $tag_obj->name ?>"></div>
     <script>
     $.jqplot('avg-tag-chart-<?= $tag_obj->name ?>',<?=  Text::MicroTemplate::encoded_string $chart_obj->get_data_part() ; ?>
     ,{
         legend: {show: true, location: 'nw'},
-        title: 'レスポンスレンジ率',
+        title: '<?=  Text::MicroTemplate::encoded_string $tag_fields->get_html_color($tag_obj->name) ?><?= $tag_fields->get_label($tag_obj->name) ?>[<?= $sample->{$tag_obj->name} ?> <font size="2">サンプル</font>]',
         series:<?= Text::MicroTemplate::encoded_string $chart_obj->get_series_part()  ?>,
         axes:{
             xaxis:{

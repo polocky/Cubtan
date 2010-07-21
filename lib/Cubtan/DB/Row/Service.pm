@@ -46,4 +46,14 @@ sub get_chart_summary_log {
     return $log ;
 }
 
+sub get_sample_summary_log {
+    my $self = shift;
+    my $range_obj = shift;
+
+    my $sth = $self->driver->dbh->prepare("SELECT sum(count) FROM summary_log WHERE service_id = ? AND date >= ? AND date <= ?");
+    $sth->execute( $self->id , $range_obj->start->ymd , $range_obj->end->ymd );
+    my $row = $sth->fetchrow_arrayref;
+    $sth->finish;
+    return $row->[0];
+}
 1;

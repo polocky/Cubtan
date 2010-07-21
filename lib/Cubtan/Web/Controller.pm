@@ -31,6 +31,12 @@ sub dispatch_service {
 #        $hash2->{$_->name} = $_->get_chart_tag_log($range_obj , 'count' );
 #    }
 
+    my $sample = {};
+    for(@$tag_objs){
+        $sample->{$_->name} = $_->get_sample_tag_log($range_obj );
+    }
+
+    
     my $avg_chart
         = Cubtan::Web::JqpLot->new({
             fields => $tag_fields,
@@ -38,6 +44,8 @@ sub dispatch_service {
             data => $hash,
             #data2 => $hash2,
         })->create;
+
+    $self->stash->{sample} = $sample;
     $self->stash->{tag_fields} = $tag_fields;
     $self->stash->{avg_chart} = $avg_chart;
     $self->stash->{range_obj} = $range_obj;
@@ -63,6 +71,11 @@ sub dispatch_root {
 #        $hash2->{$_->name} = $_->get_chart_summary_log($range_obj , 'count' );
 #    }
 
+    my $sample = {};
+    for(@$service_objs){
+        $sample->{$_->name} = $_->get_sample_summary_log($range_obj);
+    }
+
     my $avg_chart
         = Cubtan::Web::JqpLot->new({
             fields => $service_fields,
@@ -71,6 +84,7 @@ sub dispatch_root {
 #            data2 => $hash2,
         })->create;
 
+    $self->stash->{sample} = $sample;
     $self->stash->{avg_chart} = $avg_chart;
     $self->stash->{range_obj} = $range_obj;
 

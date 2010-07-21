@@ -45,6 +45,15 @@ sub get_chart_tag_log {
 
 }
 
+sub get_sample_tag_log {
+    my $self = shift;
+    my $range_obj = shift;
+    my $sth = $self->driver->dbh->prepare("SELECT sum(count) FROM tag_log WHERE tag_id = ? AND date >= ? AND date <= ?");
+    $sth->execute( $self->id , $range_obj->start->ymd , $range_obj->end->ymd );
+    my $row = $sth->fetchrow_arrayref ;
+    $sth->finish;
+    return $row->[0];
+}
 sub get_tag_range_log_chart_obj {
     my $self = shift;
     my $range_obj = shift;
