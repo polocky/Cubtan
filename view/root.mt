@@ -1,14 +1,24 @@
 ? extends 'base';
 ? block content => sub {
+
+
+<div>
+<form>
+    <input type="text" name="start" value="<?= $range_obj->start->ymd ?>" />
+    - <input type="text" name="end" value="<?= $range_obj->end->ymd ?>" />
+    <input type="submit" value="検索" />
+</form>
+</div>
+
+
+
+<div id="chart-total-page" style="height:500px"></div>
+
 <ul>
 ?    for my $service_obj ( @$service_objs ){
         <li style="list-style-type:none"><?=  Text::MicroTemplate::encoded_string $service_fields->get_html_color($service_obj->name) ?><a href="/service/<?= $service_obj->id ?>/"><?= $service_fields->get_label($service_obj->name) ?></a></li>
 ?    }
 </ul>
-
-
-<div id="chart-total-page" style="height:500px"></div>
-
 
 <table class="listing">
     <caption>レスポンス速度平均</caption>
