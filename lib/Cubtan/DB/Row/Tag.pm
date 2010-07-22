@@ -57,7 +57,7 @@ sub get_sample_tag_log {
 sub get_tag_range_log_chart_obj {
     my $self = shift;
     my $range_obj = shift;
-    my $sth = $self->driver->dbh->prepare("SELECT range,date,count FROM tag_range_log WHERE tag_id = ? AND date >= ? AND date <= ?");
+    my $sth = $self->driver->dbh->prepare("SELECT `range`,date,count FROM tag_range_log WHERE tag_id = ? AND date >= ? AND date <= ?");
     $sth->execute( $self->id , $range_obj->start->ymd , $range_obj->end->ymd );
     my $hash = {};
     my $hash2 = {};

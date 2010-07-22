@@ -46,7 +46,7 @@ sub insert_tag_range_log {
     my $driver = $self->driver;
     $self->delete_tag_range_log( $tag_obj, $date);
     for ( @{$tag->ranges} ) {
-        my $sth = $driver->dbh->prepare("INSERT INTO tag_range_log (tag_id,date,range,count,service_id ) VALUES ( ?,?,?,?,? )");
+        my $sth = $driver->dbh->prepare("INSERT INTO tag_range_log (tag_id,date,`range`,count,service_id ) VALUES ( ?,?,?,?,? )");
         $sth->execute( $tag_obj->id , $date , $_->{start} , $_->{count} , $tag_obj->service_id );
         $sth->finish;
     }
@@ -215,11 +215,11 @@ create table tag_range_log (
   id int(10) unsigned NOT NULL auto_increment,
   tag_id int unsigned NOT NULL,
   date date NOT NULL,
-  range double unsigned NOT NULL,  
+  `range` double unsigned NOT NULL,  
   count int unsigned NOT NULL,
   service_id int unsigned NOT NULL,
   PRIMARY KEY  (id),
-  UNIQUE KEY tag_id_date_range (tag_id,date,range)
+  UNIQUE KEY tag_id_date_range (tag_id,date,`range`)
 );
 
 =cut
