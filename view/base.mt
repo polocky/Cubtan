@@ -15,14 +15,14 @@
 </head>
 <body>
 <div id="header">
-    <img src="/static/image/cubtan_60.gif" />
-    <h1>Cubtan</h1>
+    <h1><a href="/">Cubtan</a></h1>
+    <p> (ノ^^)八(^^ )ノ ★地球にやさしいレスポンス速度の見える化ツール★ ブラウザーには厳しいけどねー＼(^o^)／オワタ </p>
 </div>
 <div id="main">
 <? block content => sub {} ?>
 </div>
 <div id="footer">
-<address>&copy; polocky & cubtan  ~ <a href="http://github.com/polocky/Cubtan/">Cubtan<?= $version ?></a> ~ </address>
+<address>&copy; <a href="http://blog.livedoor.jp/polocky/">polocky</a> & <a href="http://wiki.livedoor.jp/cubtan/">cubtan</a>  ~ <a href="http://github.com/polocky/Cubtan/">Cubtan<?= $version ?></a> ~ </address>
 </div>
 </body>
 </html>

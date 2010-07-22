@@ -9,6 +9,7 @@ Revision history for Perl extension Cubtan
     - deprecated config_file option for Parser. use config instead.
     - adding script/cubtan.pl for store result into database.
     - rename Log::SpeedAnalyze to Cubtan
+    - Support Web Interface
 
 0.01    Sun Jul  4 17:06:41 2010
     - original version
