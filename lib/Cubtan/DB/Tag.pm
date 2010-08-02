@@ -41,7 +41,7 @@ sub create {
     my $self = shift;
     my $name = shift;
     my $driver = $self->driver;
-    my $sth =$driver->dbh->prepare('INSERT INTO tag (service_id, name, created_at, updated_at) VALUES ( ?, ?, NOW(), NOW() )');
+    my $sth =$driver->dbh->prepare("INSERT INTO tag (service_id, name, created_at, updated_at) VALUES ( ?, ?, datetime('now'),datetime('now') )");
     $sth->execute($self->service_obj->id , $name);
     $sth->finish;
     return $self->find($name);

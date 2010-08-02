@@ -35,7 +35,13 @@ for my $service_config  (@{$config->{service}}) {
     # maybe spport it in the future or not.
     my $file = $fetcher->save_path->( $date );
     unless( -e $file ) {
-        $file = $fetcher->fetch($date);
+        eval {
+            $file = $fetcher->fetch($date);
+        };
+        if($@){
+            warn 'Fetch FAILED:'. $@;
+            next;
+        }
     } 
     my $parser = Cubtan::Parser->new({ config => $service_config->{parser} });
     my $result = $parser->parse( $file );

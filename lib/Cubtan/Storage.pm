@@ -151,77 +151,69 @@ Cubtan::Storage - storage
 =head1 SQL
 
 create table service (
-  id int(10) unsigned NOT NULL auto_increment,
+  id integer NOT NULL PRIMARY KEY,
   name varchar(255) NOT NULL,
   created_at datetime NOT NULL,
   updated_at timestamp NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE KEY name (name)
+  UNIQUE (name)
 );
 
 create table tag (
-  id int(10) unsigned NOT NULL auto_increment,
-  service_id int unsigned NOT NULL,
+  id integer NOT NULL PRIMARY KEY,
+  service_id integer unsigned NOT NULL,
   name varchar(255) NOT NULL,
   created_at datetime NOT NULL,
   updated_at timestamp NOT NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY servie_id_name (service_id,name)
+  UNIQUE (service_id,name)
 );
 
 create table summary_log (
-  id int(10) unsigned NOT NULL auto_increment,
-  service_id int unsigned NOT NULL,
+  id integer NOT NULL PRIMARY KEY,
+  service_id integer NOT NULL,
   date date NOT NULL,
-  count int unsigned NOT NULL,
-  max double unsigned NOT NULL,
-  min double unsigned NOT NULL,
-  avg double unsigned NOT NULL,
-  alert double unsigned NOT NULL,
-  alert_count int unsigned NOT NULL,
-  alert_ratio double unsigned NOT NULL,
-  skip_count int unsigned NOT NULL,
-  ignore_count int unsigned NOT NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY date_service_id (date,service_id )
+  count integer NOT NULL,
+  max double NOT NULL,
+  min double NOT NULL,
+  avg double NOT NULL,
+  alert double NOT NULL,
+  alert_count integer NOT NULL,
+  alert_ratio double NOT NULL,
+  skip_count integer NOT NULL,
+  ignore_count integer NOT NULL,
+  UNIQUE (date,service_id )
 );
 
 create table status_log (
-  id int(10) unsigned NOT NULL auto_increment,
-  service_id int unsigned NOT NULL,
+  id integer NOT NULL PRIMARY KEY,
+  service_id integer NOT NULL,
   date date NOT NULL,
-  code int unsigned NOT NULL, 
-  count int unsigned NOT NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY date_service_id_code (date , service_id ,code)
+  code integer NOT NULL, 
+  count integer NOT NULL,
+  UNIQUE (date , service_id ,code)
 );
 
 create table tag_log (
-  id int(10) unsigned NOT NULL auto_increment,
-  tag_id int unsigned NOT NULL, 
+  id integer NOT NULL PRIMARY KEY,
+  tag_id integer NOT NULL, 
   date date NOT NULL,
-  count int unsigned NOT NULL,
-  max double unsigned NOT NULL,
-  min double unsigned NOT NULL,
-  avg double unsigned NOT NULL,
-  alert_count int unsigned NOT NULL,
-  alert_ratio double unsigned NOT NULL,
-  service_id int unsigned NOT NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY date_tag_id (date,tag_id)
+  count integer NOT NULL,
+  max double NOT NULL,
+  min double NOT NULL,
+  avg double NOT NULL,
+  alert_count integer NOT NULL,
+  alert_ratio double NOT NULL,
+  service_id integer NOT NULL,
+  UNIQUE (date,tag_id)
 );
 
 create table tag_range_log (
-  id int(10) unsigned NOT NULL auto_increment,
-  tag_id int unsigned NOT NULL,
+  id integer NOT NULL PRIMARY KEY,
+  tag_id integer NOT NULL,
   date date NOT NULL,
-  `range` double unsigned NOT NULL,  
-  count int unsigned NOT NULL,
-  service_id int unsigned NOT NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY tag_id_date_range (tag_id,date,`range`)
+  `range` double NOT NULL,  
+  count integer NOT NULL,
+  service_id integer NOT NULL,
+  UNIQUE (tag_id,date,`range`)
 );
 
 =cut
-
-

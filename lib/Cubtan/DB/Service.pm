@@ -50,7 +50,7 @@ sub create {
     my $self = shift;
     my $name = shift;
     my $driver = $self->driver;
-    my $sth =$driver->dbh->prepare('INSERT INTO service (name ,created_at ,updated_at) VALUES ( ?  , NOW() , NOW() )');
+    my $sth =$driver->dbh->prepare("INSERT INTO service (name ,created_at ,updated_at) VALUES ( ?  , datetime('now') , datetime('now') )");
     $sth->execute($name);
     $sth->finish;
     return $self->find($name);

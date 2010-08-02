@@ -27,7 +27,12 @@ sub setup {
     $self->{min} = $result->{summary}{min};
     $self->{max} = $result->{summary}{max};
     $self->{count} = $result->{summary}{count};
-    $self->{avg} = int ($result->{summary}{total} / $self->count * 100 ) / 100 ;
+    if($self->count) {
+        $self->{avg} = int ($result->{summary}{total} / $self->count * 100 ) / 100 ;
+    }
+    else {
+        $self->{avg} = 0;
+    }
 
     unless ($config->{name}) {
         warn 'new feature: should set name option';

@@ -2,7 +2,11 @@ use inc::Module::Install;
 name 'Cubtan';
 all_from 'lib/Cubtan.pm';
 
-# requires '';
+# store.
+requires (
+    'DBI' => 0,
+    'DBD::SQLite' => 0,
+);
 
 tests 't/*.t';
 
