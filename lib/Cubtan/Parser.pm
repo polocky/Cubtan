@@ -48,7 +48,6 @@ sub parse {
             $self->analyze_line( $_ , $result );
         }
     }
-
     return Cubtan::Result->new( $result , $self->config ); 
 }
 
@@ -111,54 +110,63 @@ sub analyze_line {
     $result->{code}->{$row->{code}} = $result->{code}->{$row->{code}}+1 ;
 
     if( $row->{code} >= 200 && $row->{code} < 400 ) {
-        $result->{summary}{count} ||=0;
-        $result->{summary}{total} ||=0;
-        $result->{summary}{count}++;
-        $result->{summary}{total}+= $row->{time};
-        $result->{summary}{min} = $row->{time} if !$result->{summary}{min} or $result->{summary}{min} > $row->{time};
-        $result->{summary}{max} = $row->{time} if !$result->{summary}{max} or $result->{summary}{max} < $row->{time};
-
         my $hour = $self->get_hour( $row->{date} );
+        $self->build_result($result,$row);
+        $result->{hourly}{$hour} ||= {};
+        $self->build_result($result->{hourly}{$hour},$row);
+    }
+}
 
-        if( $self->alert < $row->{time} ) {
-            $result->{alert_count} ||=0;
-            $result->{alert_count}++;
-        }
-
-        for(@{$self->tag}){
-            if( $row->{path} =~ $_->{rule} ) {
-                $result->{tag}{$_->{name}}{count} ||=0;
-                $result->{tag}{$_->{name}}{count}++;
-
-                $result->{tag}{$_->{name}}{total} ||=0;
-                $result->{tag}{$_->{name}}{total} += $row->{time};
-
-                if( $self->alert < $row->{time} ) {
-                    $result->{tag}{$_->{name}}{alert_count} ||=0;
-                    $result->{tag}{$_->{name}}{alert_count}++;
-                }
+sub build_result {
+    my $self = shift;
+    my $result  = shift;
+    my $row = shift;
+    $result->{summary}{count} ||=0;
+    $result->{summary}{total} ||=0;
+    $result->{summary}{count}++;
+    $result->{summary}{total}+= $row->{time};
+    $result->{summary}{min} = $row->{time} if !$result->{summary}{min} or $result->{summary}{min} > $row->{time};
+    $result->{summary}{max} = $row->{time} if !$result->{summary}{max} or $result->{summary}{max} < $row->{time};
 
 
-                my @range = reverse @{$self->range};
-                for my $range (@range){
-                    if ( $row->{time} > $range ){
-                        $result->{tag}{$_->{name}}{range}{$range} ||=0;
-                        $result->{tag}{$_->{name}}{range}{$range}++;
-                        last;
-                    }
-                }
+    if( $self->alert < $row->{time} ) {
+        $result->{alert_count} ||=0;
+        $result->{alert_count}++;
+    }
 
+    for(@{$self->tag}){
+        if( $row->{path} =~ $_->{rule} ) {
+            $result->{tag}{$_->{name}}{count} ||=0;
+            $result->{tag}{$_->{name}}{count}++;
 
-                if( $range[0] > $row->{time} ) {
-                    $result->{tag}{$_->{name}}{range}{0} ||=0;
-                    $result->{tag}{$_->{name}}{range}{0}++;
-                }
+            $result->{tag}{$_->{name}}{total} ||=0;
+            $result->{tag}{$_->{name}}{total} += $row->{time};
 
-                $result->{tag}{$_->{name}}{min} = $row->{time} if !$result->{tag}{$_->{name}}{min} or $result->{tag}{$_->{name}}{min} > $row->{time};
-                $result->{tag}{$_->{name}}{max} = $row->{time} if !$result->{tag}{$_->{name}}{max} or $result->{tag}{$_->{name}}{max} < $row->{time};
+            if( $self->alert < $row->{time} ) {
+                $result->{tag}{$_->{name}}{alert_count} ||=0;
+                $result->{tag}{$_->{name}}{alert_count}++;
             }
-            
+
+
+            my @range = reverse @{$self->range};
+            for my $range (@range){
+                if ( $row->{time} > $range ){
+                    $result->{tag}{$_->{name}}{range}{$range} ||=0;
+                    $result->{tag}{$_->{name}}{range}{$range}++;
+                    last;
+                }
+            }
+
+
+            if( $range[0] > $row->{time} ) {
+                $result->{tag}{$_->{name}}{range}{0} ||=0;
+                $result->{tag}{$_->{name}}{range}{0}++;
+            }
+
+            $result->{tag}{$_->{name}}{min} = $row->{time} if !$result->{tag}{$_->{name}}{min} or $result->{tag}{$_->{name}}{min} > $row->{time};
+            $result->{tag}{$_->{name}}{max} = $row->{time} if !$result->{tag}{$_->{name}}{max} or $result->{tag}{$_->{name}}{max} < $row->{time};
         }
+
     }
 }
 

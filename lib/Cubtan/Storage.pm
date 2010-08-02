@@ -29,11 +29,22 @@ sub store {
     my $result = shift;
     my $service_obj = $self->service_db->find_or_create( $result->name );
     $self->insert_summary_log( $service_obj , $date , $result );
+
     $self->insert_status_log( $service_obj , $date , $result );
     for my $tag_name ( keys %{$result->tag} ) {
         my $tag_obj = $service_obj->get_tag_obj( $tag_name );
         $self->insert_tag_log( $date,$tag_obj,$result->tag->{$tag_name} );
         $self->insert_tag_range_log( $date,$tag_obj,$result->tag->{$tag_name} );
+    }
+
+    my $hour = 0;
+    for(@{$result->hourly}) { 
+        $self->insert_summary_log_per_hourly( $service_obj , $date , $_ , $hour);
+        for my $tag_name ( keys %{$_->tag} ) {
+            my $tag_obj = $service_obj->get_tag_obj( $tag_name );
+            $self->insert_tag_log_per_hourly( $date,$tag_obj,$_->tag->{$tag_name} ,$hour);
+        }
+        $hour++;
     }
 
 }
@@ -74,14 +85,35 @@ sub insert_tag_log{
     $sth->execute( $tag_obj->id , $date , $tag->count,$tag->max,$tag->min,$tag->avg,$tag->alert_count,$tag->alert_ratio,$tag_obj->service_id );
     $sth->finish;
 }
+
+
+sub insert_tag_log_per_hourly{
+    my $self = shift;
+    my $date = shift;
+    my $tag_obj = shift;
+    my $tag = shift;
+    my $hour = shift;
+    my $driver = $self->driver;
+    my $sth = $driver->dbh->prepare("INSERT INTO tag_log_per_hour (tag_id,date,hour,count,max,min,avg,alert_count,alert_ratio,service_id) VALUES ( ?,?,?,?,?,?,?,?,?,?)");
+    $sth->execute( $tag_obj->id , $date ,$hour, $tag->count,$tag->max,$tag->min,$tag->avg,$tag->alert_count,$tag->alert_ratio,$tag_obj->service_id );
+    $sth->finish;
+}
+
 sub delete_tag_log {
     my $self = shift;
     my $tag_obj= shift;
     my $date   = shift;
     my $driver = $self->driver;
-    my $sth = $driver->dbh->prepare("DELETE FROM tag_log WHERE tag_id = ? AND date = ?");
-    $sth->execute(  $tag_obj->id , $date );
-    $sth->finish;
+    {
+        my $sth = $driver->dbh->prepare("DELETE FROM tag_log WHERE tag_id = ? AND date = ?");
+        $sth->execute(  $tag_obj->id , $date );
+        $sth->finish;
+    } 
+    {
+        my $sth = $driver->dbh->prepare("DELETE FROM tag_log_per_hour WHERE tag_id = ? AND date = ?");
+        $sth->execute(  $tag_obj->id , $date );
+        $sth->finish;
+    } 
 }
 
 sub insert_status_log {
@@ -110,6 +142,17 @@ sub delete_status_log {
 
 }
 
+sub insert_summary_log_per_hourly {
+    my $self   = shift;
+    my $service_obj = shift;
+    my $date   = shift;
+    my $result = shift;
+    my $hour = shift;
+    my $driver = $self->driver;
+    my $sth = $driver->dbh->prepare("INSERT INTO summary_log_per_hour (service_id,date,hour,count,max,min,avg,alert,alert_count,alert_ratio,skip_count,ignore_count) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?)");
+    $sth->execute( $service_obj->id , $date , $hour,$result->count, $result->max,$result->min,$result->avg,$result->alert , $result->alert_count,$result->alert_ratio,$result->skip_count,$result->ignore_count );
+    $sth->finish;
+}
 sub insert_summary_log {
     my $self   = shift;
     my $service_obj = shift;
@@ -126,9 +169,17 @@ sub delete_summary_log {
     my $service_obj = shift;
     my $date   = shift;
     my $driver = $self->driver;
-    my $sth = $driver->dbh->prepare("DELETE FROM summary_log WHERE service_id = ? AND date = ?");
-    $sth->execute(  $service_obj->id , $date );
-    $sth->finish;
+    {
+        my $sth = $driver->dbh->prepare("DELETE FROM summary_log WHERE service_id = ? AND date = ?");
+        $sth->execute(  $service_obj->id , $date );
+        $sth->finish;
+    }
+
+    {
+        my $sth = $driver->dbh->prepare("DELETE FROM summary_log_per_hour WHERE service_id = ? AND date = ?");
+        $sth->execute(  $service_obj->id , $date );
+        $sth->finish;
+    }
 }
 
 1;
@@ -223,6 +274,21 @@ create table tag_log (
   alert_ratio double NOT NULL,
   service_id integer NOT NULL,
   UNIQUE (date,tag_id)
+);
+
+create table tag_log_per_hour (
+  id integer NOT NULL PRIMARY KEY,
+  tag_id integer NOT NULL, 
+  date date NOT NULL,
+  hour integer NOT NULL,
+  count integer NOT NULL,
+  max double NOT NULL,
+  min double NOT NULL,
+  avg double NOT NULL,
+  alert_count integer NOT NULL,
+  alert_ratio double NOT NULL,
+  service_id integer NOT NULL,
+  UNIQUE (date,hour,tag_id)
 );
 
 create table tag_range_log (

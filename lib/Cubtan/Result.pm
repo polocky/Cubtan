@@ -38,12 +38,21 @@ sub setup {
 
     $self->{name} = $config->{name} || 'unknown';
 
-
     for my $tag ( keys %{$result->{tag}} ){
         $self->{tag}{$tag} = Cubtan::Result::Tag->new( $result->{tag}{$tag} );
     }
+
+    if($result->{hourly}){
+        my @hourly = ();
+        for(0..23){
+            my $hour = sprintf('%02d',$_);
+            push @hourly ,Cubtan::Result->new($result->{hourly}{$hour} || {} ,$config );
+        }
+        $self->{hourly} = \@hourly;
+    }
 }
 
+sub hourly { shift->{hourly} }
 sub name { shift->{name} }
 sub tag {
     my $self = shift;
@@ -64,7 +73,12 @@ sub alert_ratio {
     my $self = shift;
     return 0 unless $self->alert_count;
     my $total = $self->code('200');
-    int( $self->alert_count / $total * 100 ) ;
+    if($total){
+        int( $self->alert_count / $total * 100 ) ;
+    }
+    else {
+        return 0;
+    }
 }
 sub count { shift->{count} || 0 }
 sub code { 
@@ -82,5 +96,6 @@ sub code_list {
     my @keys = sort { $a <=> $b } keys %$code;
     return \@keys;
 }
+
 
 1;
