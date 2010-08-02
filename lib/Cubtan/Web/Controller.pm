@@ -6,6 +6,40 @@ use Cubtan::DateTime;
 use Cubtan::DateRange;
 use Cubtan::Web::JqpLot;
 
+sub dispatch_service_hourly {
+    my $self = shift;
+    $self->{file} = 'service/hourly';
+    my $range_obj = $self->get_target_range();
+    my $service_id = $self->args->[0];
+    my $service_db = Cubtan::DB::Service->new( $self->driver );
+    my $service_obj = $service_db->lookup( $service_id) or die 'NOT FOUND';;
+
+    $self->stash->{service_obj} = $service_obj;
+    $self->stash->{range_obj} = $range_obj;
+
+    my $summary_avg_chart = $service_obj->get_chart_summary_log_per_hour( $range_obj,'avg');
+
+    my $service_config = $self->get_service_config( $service_obj );
+    my $tag_fields = $self->get_tag_fields( $service_config , [ { name => '_summary',  label => 'サマリー値' } ] );
+    my $hash = {};
+    my $tag_objs = $service_obj->get_tag_objs();
+    for(@$tag_objs){
+        $hash->{$_->name} = $_->get_chart_tag_log_per_hour($range_obj , 'avg' );
+    }
+
+    $hash->{summary} = $summary_avg_chart;
+    my $avg_chart
+        = Cubtan::Web::JqpLot->new({
+            fields => $tag_fields,
+            range => $range_obj->hour_array,
+            data => $hash,
+        })->create;
+
+    $self->stash->{tag_fields} = $tag_fields;
+    $self->stash->{avg_chart} = $avg_chart;
+
+}
+
 sub dispatch_service {
     my $self = shift;
     $self->{file} = 'service';
@@ -154,8 +188,12 @@ sub get_target_day {
 sub get_tag_fields {
     my $self = shift;
     my $service_config = shift;
+    my $addition = shift || [];
     my $fields = {};
     for( @{$service_config->{parser}{tag}} ){
+        $fields->{$_->{name}} = {  label => $_->{label}  } ;
+    }
+    for(@$addition){
         $fields->{$_->{name}} = {  label => $_->{label}  } ;
     }
     return Cubtan::Fields->new($fields);

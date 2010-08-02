@@ -16,7 +16,7 @@
 
 <ul>
 ?    for my $service_obj ( @$service_objs ){
-        <li style="list-style-type:none"><a href="/service/<?= $service_obj->id ?>/"><?= $service_fields->get_label($service_obj->name) ?></a>[<?= $sample->{$service_obj->name} ?> <font size="2">サンプル</font>]</li>
+        <li style="list-style-type:none"><a href="/service/<?= $service_obj->id ?>/"><?= $service_fields->get_label($service_obj->name) ?></a>[<?= $sample->{$service_obj->name} ?> <font size="2">サンプル</font>]<a href="/service/<?= $service_obj->id ?>/hourly/">hourly</a></li>
 ?    }
 </ul>
 

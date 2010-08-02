@@ -44,6 +44,20 @@ sub get_chart_tag_log {
     return $log ;
 
 }
+sub get_chart_tag_log_per_hour {
+    my $self = shift;
+    my $range_obj = shift;
+    my $key = shift || 'avg';
+
+    my $sth = $self->driver->dbh->prepare("SELECT avg($key) $key ,hour FROM tag_log_per_hour WHERE tag_id = ? AND date >= ? AND date <= ? GROUP BY hour");
+    $sth->execute( $self->id , $range_obj->start->ymd , $range_obj->end->ymd );
+    my $log = {};
+    while(my $row = $sth->fetchrow_hashref ) {
+        $log->{$row->{hour}} = $row->{$key};
+    }
+    $sth->finish;
+    return $log ;
+}
 
 sub get_sample_tag_log {
     my $self = shift;

@@ -23,10 +23,11 @@ sub setup {
     my $args = shift;
     $self->{driver} = $args->{driver};
     $self->{view_home} = $args->{view_home};
-    my $method_maping = {
-        '/service/(\d+)/' => 'dispatch_service',
-        '/' => 'dispatch_root',
-    };
+    my $method_maping = [
+        [ '/service/(\d+)/hourly/' => 'dispatch_service_hourly'],
+        [ '/service/(\d+)/' => 'dispatch_service'],
+        ['/' => 'dispatch_root'],
+    ];
     $self->{method_maping} = $method_maping;
     
     $self->{config} = $args->{config};
@@ -60,7 +61,7 @@ sub dispatch {
         );
 
         my $body = $mt->render_file( $controller->file );
-        $res->content_type('text/html') unless $res->content_type;
+        $res->content_type('text/html;charset=utf-8') unless $res->content_type;
         $body = encode('utf8',$body);
         $body ? $res->body($body) : $res->body(':-)');
         return $res->finalize;
@@ -70,9 +71,10 @@ sub dispatch {
 sub lookup {
     my $self = shift;
     my $path_info = shift;
-    for my $regexp (keys %{$self->{method_maping}}){
+    for (@{$self->{method_maping}}){
+        my ($regexp , $method_name) = @$_;
         if( my (@args) = $path_info =~ /$regexp/ ) {
-            return ($self->{method_maping}{$regexp} , \@args );
+            return ($method_name , \@args );
         }
     }
     return ('root',[]);

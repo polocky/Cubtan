@@ -20,6 +20,10 @@ sub new_from_yestarday {
 sub start { shift->{start} }
 sub end { shift->{end} }
 
+sub hour_array{
+    my @hourly = (0..24);
+    return \@hourly;
+}
 sub range_array{
     my $self = shift;
     my @range = ();
