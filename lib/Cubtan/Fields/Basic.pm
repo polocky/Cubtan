@@ -4,14 +4,10 @@ use strict;
 
 my %fields = (
     avg => {
-        color => 'yellow',
         label => 'average'
-        comment => 'average',
     },
     arrival => {
-        color => 'green',
         label => 'label',
-        comment => 'comment',
     },
 );
 

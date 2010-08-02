@@ -80,7 +80,7 @@ sub get_tag_range_log_chart_obj {
 
     my $fields = {};
     for(@keys){
-        $fields->{$_} = { label => $_ ,comment => '' };
+        $fields->{$_} = { label => $_  };
     }
     my $fields_obj = Cubtan::Fields::Tag->new($fields);
 

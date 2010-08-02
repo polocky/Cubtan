@@ -17,7 +17,6 @@ sub field {
     }
     else {
         return {
-            color => 'black',
             label => 'unknown',
         };
     }
@@ -34,7 +33,6 @@ sub get_series {
     my @data = ();
     for(@$keys) {
         my $field = {
-            color => $self->field($_)->{color},
             label => $self->field($_)->{label},
         };
         push @data , $field;
@@ -42,12 +40,6 @@ sub get_series {
     return \@data;
 }
 
-sub get_html_label_comment {
-    my $self = shift;
-    my $key  = shift;
-    my $field = $self->field($key);
-    return sprintf('<font color="%s">■</font> %s - %s', $field->{color}, $field->{label} , $field->{comment} );
-}
 sub get_label {
     my $self = shift;
     my $key = shift;
@@ -59,14 +51,7 @@ sub get_html_label {
     my $self = shift;
     my $key = shift;
     my $field = $self->field($key);
-    return sprintf('<font color="%s">■</font> %s', $field->{color}, $field->{label} );
-}
-
-sub get_html_color {
-    my $self = shift;
-    my $key = shift;
-    my $field = $self->field($key);
-    return sprintf('<font color="%s">■</font>', $field->{color});
+    return $field->{label};
 }
 
 1;

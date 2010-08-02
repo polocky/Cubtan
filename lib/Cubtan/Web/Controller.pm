@@ -96,7 +96,7 @@ sub get_service_fields {
     my $fields = {};
     for(@{$self->config->{service}}) {
         my $name = $_->{parser}{name} || 'unknown';
-        $fields->{$name} = $_->{field} || { color =>'black',label =>'Unknown',comment =>"Unknown" };
+        $fields->{$name} = $_->{field} || { label =>'Unknown' };
     }
     return Cubtan::Fields->new($fields);
 }
@@ -156,7 +156,7 @@ sub get_tag_fields {
     my $service_config = shift;
     my $fields = {};
     for( @{$service_config->{parser}{tag}} ){
-        $fields->{$_->{name}} = { color => $_->{color} , label => $_->{label} , comment => '' } ;
+        $fields->{$_->{name}} = {  label => $_->{label}  } ;
     }
     return Cubtan::Fields->new($fields);
     

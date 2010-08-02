@@ -1,7 +1,8 @@
 Revision history for Perl extension Cubtan
 
 0.03 2010-07-23
-    - range is reserved name from mysql5. so `range`.
+    - deprecated color and comment setting.
+    - /favicon.ico support.
 
 0.02 2010-07-22
     - multi file parse support.

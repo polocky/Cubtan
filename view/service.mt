@@ -52,7 +52,7 @@
     $.jqplot('avg-tag-chart-<?= $tag_obj->name ?>',<?=  Text::MicroTemplate::encoded_string $chart_obj->get_data_part() ; ?>
     ,{
         legend: {show: true, location: 'nw'},
-        title: '<?=  Text::MicroTemplate::encoded_string $tag_fields->get_html_color($tag_obj->name) ?><?= $tag_fields->get_label($tag_obj->name) ?>[<?= $sample->{$tag_obj->name} ?> <font size="2">サンプル</font>]',
+        title: '<?= $tag_fields->get_label($tag_obj->name) ?>[<?= $sample->{$tag_obj->name} ?> <font size="2">サンプル</font>]',
         series:<?= Text::MicroTemplate::encoded_string $chart_obj->get_series_part()  ?>,
         axes:{
             xaxis:{

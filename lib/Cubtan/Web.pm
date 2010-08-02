@@ -31,6 +31,8 @@ sub run {
     builder {
         enable "Plack::Middleware::Static",
             path => qr{^/static/}, root => $self->root_path;
+        enable "Plack::Middleware::Static",
+            path => qr{^/favicon\.ico$}, root => $self->root_path . 'static/image/';
         $self->dispatcher->dispatch, 
     };
 }
