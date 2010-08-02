@@ -56,16 +56,16 @@ sub hourly { shift->{hourly} }
 sub name { shift->{name} }
 sub tag {
     my $self = shift;
-    $self->{tag};
+    $self->{tag} || {};
 }
 
 sub alert {shift->{alert} || 0 }
 sub alert_count {shift->{alert_count} || 0 }
 sub skip { shift->{skip} || 0 }
 sub ignore_count { shift->{ignore} || 0 }
-sub min { shift->{min} }
-sub max { shift->{max} }
-sub avg { shift->{avg} }
+sub min { shift->{min} || 0 }
+sub max { shift->{max} || 0 }
+sub avg { shift->{avg} || 0  }
 
 *skip_count = *skip;
 
