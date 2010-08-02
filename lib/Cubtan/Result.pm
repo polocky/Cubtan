@@ -12,7 +12,6 @@ sub new {
     return $self;
 }
 
-sub very_slow { shift->{very_slow}; }
 sub setup {
     my $self = shift;
     my $result = shift;
@@ -22,7 +21,6 @@ sub setup {
     $self->{ignore} = $result->{ignore} ;
     $self->{code} = $result->{code};
     $self->{alert} = $config->{alert};
-    $self->{very_slow} = $config->{very_slow} || 0;
 
     $self->{min} = $result->{summary}{min};
     $self->{max} = $result->{summary}{max};
@@ -40,11 +38,6 @@ sub setup {
 
     $self->{name} = $config->{name} || 'unknown';
 
-    if($self->{very_slow} ) {
-        $self->{very_slow_hourly} = $result->{very_slow}{hour};
-        $self->{very_slow_logs} = $result->{very_slow}{logs};
-        $self->{very_slow_count} = $result->{very_slow}{count};
-    }
 
     for my $tag ( keys %{$result->{tag}} ){
         $self->{tag}{$tag} = Cubtan::Result::Tag->new( $result->{tag}{$tag} );
@@ -89,14 +82,5 @@ sub code_list {
     my @keys = sort { $a <=> $b } keys %$code;
     return \@keys;
 }
-
-sub very_slow_hourly {
-    my $self = shift;
-    my $hour = sprintf("%02d",shift);
-    return $self->{very_slow_hourly}{$hour} || 0 ;
-}
-
-sub very_slow_count { shift->{very_slow_count} || 0 }
-sub very_slow_logs { shift->{very_slow_logs} || [] }
 
 1;

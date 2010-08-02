@@ -70,8 +70,6 @@ sub tag { shift->config->{tag} || [] }
 sub range { shift->config->{range} }
 sub unit { shift->config->{unit} || '' }
 
-sub very_slow { shift->config->{very_slow} || 0 } 
-
 sub parse_line {
     my $self = shift;
     my $line = shift;
@@ -121,17 +119,6 @@ sub analyze_line {
         $result->{summary}{max} = $row->{time} if !$result->{summary}{max} or $result->{summary}{max} < $row->{time};
 
         my $hour = $self->get_hour( $row->{date} );
-
-        
-        if ( $self->very_slow && $row->{time} > $self->very_slow ){
-            $result->{very_slow}{count}||=0;
-            $result->{very_slow}{count}++;
-            $result->{very_slow}{hour}{$hour} ||=0;
-            $result->{very_slow}{hour}{$hour}++;
-            $result->{very_slow}{logs} ||= ();
-            push @{$result->{very_slow}{logs}} , $line ;
-        }
-
 
         if( $self->alert < $row->{time} ) {
             $result->{alert_count} ||=0;

@@ -4,6 +4,7 @@ Revision history for Perl extension Cubtan
     - deprecated color and comment setting.
     - /favicon.ico support.
     - switch mysql to sqlite
+    - obsolete very slow check.
 
 0.02 2010-07-22
     - multi file parse support.

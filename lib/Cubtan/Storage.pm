@@ -183,6 +183,24 @@ create table summary_log (
   UNIQUE (date,service_id )
 );
 
+create table summary_log_per_hour (
+  id integer NOT NULL PRIMARY KEY,
+  service_id integer NOT NULL,
+  date date NOT NULL,
+  hour integer NOT NULL,
+  count integer NOT NULL,
+  max double NOT NULL,
+  min double NOT NULL,
+  avg double NOT NULL,
+  alert double NOT NULL,
+  alert_count integer NOT NULL,
+  alert_ratio double NOT NULL,
+  skip_count integer NOT NULL,
+  ignore_count integer NOT NULL,
+  UNIQUE (date,hour,service_id )
+);
+
+
 create table status_log (
   id integer NOT NULL PRIMARY KEY,
   service_id integer NOT NULL,
@@ -191,6 +209,7 @@ create table status_log (
   count integer NOT NULL,
   UNIQUE (date , service_id ,code)
 );
+
 
 create table tag_log (
   id integer NOT NULL PRIMARY KEY,
