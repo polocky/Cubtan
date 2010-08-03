@@ -27,7 +27,7 @@ sub dispatch_service_hourly {
         $hash->{$_->name} = $_->get_chart_tag_log_per_hour($range_obj , 'avg' );
     }
 
-    $hash->{summary} = $summary_avg_chart;
+    $hash->{_summary} = $summary_avg_chart;
     my $avg_chart
         = Cubtan::Web::JqpLot->new({
             fields => $tag_fields,
