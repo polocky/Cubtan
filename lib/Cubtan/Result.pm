@@ -52,7 +52,7 @@ sub setup {
     }
 }
 
-sub hourly { shift->{hourly} }
+sub hourly { shift->{hourly} || [] }
 sub name { shift->{name} }
 sub tag {
     my $self = shift;
