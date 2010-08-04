@@ -68,13 +68,13 @@ sub get_sample_tag_log {
     $sth->finish;
     return $row->[0];
 }
-sub get_tag_range_log_chart_obj {
+
+sub get_tag_range_log {
     my $self = shift;
     my $range_obj = shift;
     my $sth = $self->driver->dbh->prepare("SELECT `range`,date,count FROM tag_range_log WHERE tag_id = ? AND date >= ? AND date <= ?");
     $sth->execute( $self->id , $range_obj->start->ymd , $range_obj->end->ymd );
     my $hash = {};
-    my $hash2 = {};
     my $data = {};
     while(my $row = $sth->fetchrow_hashref ) {
         $data->{count}{$row->{range}}{$row->{date}} = $row->{count};
@@ -82,30 +82,12 @@ sub get_tag_range_log_chart_obj {
         $data->{max}{$row->{date}} += $row->{count};
     }
     $sth->finish;
-
     for my $range (keys %{$data->{count}} ){
         for my $date (keys %{$data->{count}{$range}} ){
             $hash->{$range}{$date} = int ( $data->{count}{$range}{$date} / $data->{max}{$date}  * 100 * 100 ) / 100;
-            #$hash2->{$range}{$date} =  $data->{count}{$range}{$date};
         }
     }
-    
-    my @keys = keys %$hash;
-
-    my $fields = {};
-    for(@keys){
-        $fields->{$_} = { label => $_  };
-    }
-    my $fields_obj = Cubtan::Fields::Tag->new($fields);
-
-    my $avg_chart
-        = Cubtan::Web::JqpLot->new({
-            fields => $fields_obj,
-            range => $range_obj->range_array,
-            data => $hash,
-            #hash2 => $hash2,
-        })->create;
-
+    return $hash;
 }
 
 1;

@@ -9,29 +9,22 @@
     <input type="submit" value="検索" />
 </form>
 </div>
-<div id="avg-chart" style="height:500px"></div>
-<script>
-    $.jqplot('avg-chart',  <?= Text::MicroTemplate::encoded_string $avg_chart->get_data_part(); ?>
-    ,{
-        title:'レスポンス速度平均Hourlyグラフ[<?= $range_obj->start->ymd('/') ?> - <?= $range_obj->end->ymd('/') ?>]',
-        axes:{
-            xaxis:{
-                tickOptions:{formatString:'%d'},
-                min: 0,
-                max: 23,
-            },
-            yaxis:{
-                autoscale:true,
-                tickOptions:{formatString:'%.02f'}
-            },
-        },
-        legend:{  
-              show:true,  
-              location: 'nw',  
-              },
-        series:<?= Text::MicroTemplate::encoded_string $avg_chart->get_series_part()  ?>
-    }
-    );
+レスポンス速度平均Hourlyグラフ[<?= $range_obj->start->ymd('/') ?> - <?= $range_obj->end->ymd('/') ?>]<br />
+<div id="avg_chart"></div>
+? my $graphs;
+? my $i = 0;
+? for my $tag_obj ( @$tag_objs ) {
+?     $graphs .= sprintf '<graph gid="%s"><title>%s</title></graph>', $i++, $tag_fields->get_label( $tag_obj->name );
+? }
+? $graphs .= sprintf '<graph gid="%s"><title>%s</title></graph>', $i++, $tag_fields->get_label( 'summary' );
+? my $settings = sprintf '<settings><data_type>csv</data_type><csv_separator>,</csv_separator><graphs>%s</graphs></settings>', $graphs;
+? my $data = join '\n', @$lines;
+<script language="javascript" type="text/javascript">
+var so = new SWFObject("/static/amline/amline.swf", "amline", "640", "400", "8", "#FFFFFF");
+so.addVariable("path", "/static/amline/");
+so.addVariable("chart_settings", "<?= $settings ?>")
+so.addVariable("chart_data", "<?= $data ?>");
+so.write("avg_chart");
 </script>
 
-? } 
+? }

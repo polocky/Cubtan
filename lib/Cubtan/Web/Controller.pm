@@ -4,124 +4,123 @@ use strict;
 use Cubtan::DB::Service;
 use Cubtan::DateTime;
 use Cubtan::DateRange;
-use Cubtan::Web::JqpLot;
 
 sub dispatch_service_hourly {
     my $self = shift;
     $self->{file} = 'service/hourly';
-    my $range_obj = $self->get_target_range();
-    my $service_id = $self->args->[0];
-    my $service_db = Cubtan::DB::Service->new( $self->driver );
-    my $service_obj = $service_db->lookup( $service_id) or die 'NOT FOUND';;
+    my $range_obj   = $self->get_target_range();
+    my $service_id  = $self->args->[0];
+    my $service_obj = Cubtan::DB::Service->new( $self->driver )->lookup( $service_id) or die 'NOT FOUND';
+    my $tag_objs    = $service_obj->get_tag_objs();
+    my $summary     = {};
+    for my $tag_obj ( @$tag_objs ) {
+        $summary->{$tag_obj->name} = $tag_obj->get_chart_tag_log_per_hour( $range_obj , 'avg' );
+    }
+    $summary->{summary} = $service_obj->get_chart_summary_log_per_hour( $range_obj, 'avg' );
 
-    $self->stash->{service_obj} = $service_obj;
-    $self->stash->{range_obj} = $range_obj;
+    # make line for tag_obj
+    my @lines;
+    for my $hour ( 0..23 ) {
+        my @data = $hour;
+        for my $tag_obj ( @$tag_objs ) {
+            push @data, $summary->{$tag_obj->name}->{$hour} || 0;
+        }
+        push @data, $summary->{summary}->{$hour} || 0;
 
-    my $summary_avg_chart = $service_obj->get_chart_summary_log_per_hour( $range_obj,'avg');
-
-    my $service_config = $self->get_service_config( $service_obj );
-    my $tag_fields = $self->get_tag_fields( $service_config , [ { name => '_summary',  label => 'サマリー値' } ] );
-    my $hash = {};
-    my $tag_objs = $service_obj->get_tag_objs();
-    for(@$tag_objs){
-        $hash->{$_->name} = $_->get_chart_tag_log_per_hour($range_obj , 'avg' );
+        my $line = join ',', @data;
+        push @lines, $line;
     }
 
-    $hash->{_summary} = $summary_avg_chart;
-    my $avg_chart
-        = Cubtan::Web::JqpLot->new({
-            fields => $tag_fields,
-            range => $range_obj->hour_array,
-            data => $hash,
-        })->create;
-
-    $self->stash->{tag_fields} = $tag_fields;
-    $self->stash->{avg_chart} = $avg_chart;
-
+    my $tag_fields = $self->get_tag_fields( $self->get_service_config( $service_obj ),
+                                            [ { name => 'summary',  label => 'Summary' } ] );
+    $self->stash->{service_obj} = $service_obj;
+    $self->stash->{range_obj}   = $range_obj;
+    $self->stash->{tag_fields}  = $tag_fields;
+    $self->stash->{tag_objs}    = $tag_objs;
+    $self->stash->{summary}     = $summary;
+    $self->stash->{lines}       = \@lines;
 }
 
 sub dispatch_service {
     my $self = shift;
     $self->{file} = 'service';
-    my $range_obj = $self->get_target_range();
-    my $service_id = $self->args->[0];
-    my $service_db = Cubtan::DB::Service->new( $self->driver );
-    my $service_obj = $service_db->lookup( $service_id) or die 'NOT FOUND';;
-    $self->stash->{service_obj} = $service_obj;
+    my $range_obj      = $self->get_target_range();
+    my $service_id     = $self->args->[0];
+    my $service_obj    = Cubtan::DB::Service->new( $self->driver )->lookup( $service_id ) or die 'NOT FOUND';
+    my $tag_objs       = $service_obj->get_tag_objs();
+    my $summary        = {};
+    my $sample         = {};
+    my %tag_range_of;
+    for my $tag_obj ( @$tag_objs ) {
+        $summary->{$tag_obj->name} = $tag_obj->get_chart_tag_log($range_obj , 'avg' );
+        $sample->{$tag_obj->name} = $tag_obj->get_sample_tag_log($range_obj );
 
-    my $service_config = $self->get_service_config( $service_obj );
-
-    my $tag_fields = $self->get_tag_fields( $service_config );
-
-    my $hash = {};
-    my $tag_objs = $service_obj->get_tag_objs();
-    for(@$tag_objs){
-        $hash->{$_->name} = $_->get_chart_tag_log($range_obj , 'avg' );
+        # make line for range per tag_obj.
+        my $tag_range_log = $tag_obj->get_tag_range_log($range_obj);
+        for my $date ( @{ $range_obj->range_array } ) {
+            my @data = $date;
+            my @ranges = sort { $a <=> $b } keys %$tag_range_log;
+            for my $range ( @ranges ) {
+                push @data, $tag_range_log->{ $range }->{ $date } || 0;
+            }
+            my $line = join ',', @data;
+            push @{ $tag_range_of{ $tag_obj->name }->{ lines } }, $line;
+            push @{ $tag_range_of{ $tag_obj->name }->{ ranges } }, @ranges;
+        }
     }
 
-# not balanced.
-#    my $hash2 = {};
-#    for(@$tag_objs){
-#        $hash2->{$_->name} = $_->get_chart_tag_log($range_obj , 'count' );
-#    }
-
-    my $sample = {};
-    for(@$tag_objs){
-        $sample->{$_->name} = $_->get_sample_tag_log($range_obj );
+    # make line for tag_obj
+    my @lines;
+    for my $date ( @{ $range_obj->range_array } ) {
+        my @data = $date;
+        for my $tag_obj (@$tag_objs) {
+            push @data, $summary->{$tag_obj->name}->{$date} || 0;
+        }
+        my $line = join ',', @data;
+        push @lines, $line;
     }
 
-    
-    my $avg_chart
-        = Cubtan::Web::JqpLot->new({
-            fields => $tag_fields,
-            range => $range_obj->range_array,
-            data => $hash,
-            #data2 => $hash2,
-        })->create;
-
-    $self->stash->{sample} = $sample;
-    $self->stash->{tag_fields} = $tag_fields;
-    $self->stash->{avg_chart} = $avg_chart;
-    $self->stash->{range_obj} = $range_obj;
-
+    $self->stash->{service_obj}  = $service_obj;
+    $self->stash->{range_obj}    = $range_obj;
+    $self->stash->{sample}       = $sample;
+    $self->stash->{tag_fields}   = $self->get_tag_fields( $self->get_service_config( $service_obj ) );
+    $self->stash->{tag_objs}     = $tag_objs;
+    $self->stash->{summary}      = $summary;
+    $self->stash->{lines}        = \@lines;
+    $self->stash->{tag_range_of} = \%tag_range_of;
 }
 
 sub dispatch_root {
     my $self = shift;
     $self->{file} = 'root';
-    my $range_obj = $self->get_target_range();
-    my $service_db = Cubtan::DB::Service->new( $self->driver );
-    my $service_objs = $service_db->retrieve_all();
+
+    my $range_obj      = $self->get_target_range();
     my $service_fields = $self->get_service_fields;
-    my $hash  = {};
-    for(@$service_objs){
-        $hash->{$_->name} = $_->get_chart_summary_log($range_obj , 'avg' );
+    my $service_objs   = Cubtan::DB::Service->new( $self->driver )->retrieve_all();
+    my $summary        = {};
+    my $sample         = {};
+
+    for my $service_obj ( @$service_objs ) {
+        $summary->{$service_obj->name} = $service_obj->get_chart_summary_log($range_obj , 'avg');
+        $sample->{$service_obj->name}  = $service_obj->get_sample_summary_log($range_obj);
     }
-    $self->stash->{service_objs} = $service_objs;
+
+    my @lines;
+    for my $date ( @{ $range_obj->range_array } ) {
+        my @data = $date;
+        for my $service_obj (@$service_objs) {
+            push @data, $summary->{$service_obj->name}->{$date} || 0;
+        }
+        my $line = join ',', @data;
+        push @lines, $line;
+    }
+
+    $self->stash->{service_objs}   = $service_objs;
     $self->stash->{service_fields} = $service_fields;
-
-#    my $hash2 = {};
-#    for(@$service_objs){
-#        $hash2->{$_->name} = $_->get_chart_summary_log($range_obj , 'count' );
-#    }
-
-    my $sample = {};
-    for(@$service_objs){
-        $sample->{$_->name} = $_->get_sample_summary_log($range_obj);
-    }
-
-    my $avg_chart
-        = Cubtan::Web::JqpLot->new({
-            fields => $service_fields,
-            range => $range_obj->range_array,
-            data => $hash,
-#            data2 => $hash2,
-        })->create;
-
-    $self->stash->{sample} = $sample;
-    $self->stash->{avg_chart} = $avg_chart;
-    $self->stash->{range_obj} = $range_obj;
-
+    $self->stash->{sample}         = $sample;
+    $self->stash->{summary}        = $summary;
+    $self->stash->{lines}          = \@lines;
+    $self->stash->{range_obj}      = $range_obj;
 }
 
 
@@ -134,8 +133,6 @@ sub get_service_fields {
     }
     return Cubtan::Fields->new($fields);
 }
-
-
 
 sub get_target_range {
     my $self = shift;
@@ -158,7 +155,6 @@ sub get_target_range {
         return Cubtan::DateRange->new_from_yestarday();
     }
 }
-
 
 sub get_service_config {
     my $self = shift;
@@ -197,8 +193,8 @@ sub get_tag_fields {
         $fields->{$_->{name}} = {  label => $_->{label}  } ;
     }
     return Cubtan::Fields->new($fields);
-    
 }
+
 sub new {
     my $class = shift;
     my $args = shift;

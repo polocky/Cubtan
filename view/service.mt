@@ -10,75 +10,43 @@
 </form>
 </div>
 
-<div id="avg-chart" style="height:500px"></div>
+<br /><br />
 
-
-<script>
-    $.jqplot('avg-chart',  <?= Text::MicroTemplate::encoded_string $avg_chart->get_data_part(); ?>
-    ,{
-        title:'レスポンス速度平均グラフ[<?= $range_obj->start->ymd('/') ?> - <?= $range_obj->end->ymd('/') ?>]',
-        axes:{
-            xaxis:{
-                renderer:$.jqplot.DateAxisRenderer,
-                tickInterval:'1 day' ,
-                tickOptions:{formatString:'%d'},
-                min:'<?= $range_obj->start->ymd ?>',
-                max:'<?= $range_obj->end->ymd ?>'
-            },
-            yaxis:{
-                autoscale:true,
-                tickOptions:{formatString:'%.02f'}
-            },
-            y2axis:{
-                autoscale:true,
-                tickOptions:{formatString:'%d'}
-            }
-        },
-        legend:{  
-              show:true,  
-              location: 'nw',  
-              },
-        series:<?= Text::MicroTemplate::encoded_string $avg_chart->get_series_part()  ?>
-    }
-    );
+<font size="+1">レスポンス速度平均グラフ[<?= $range_obj->start->ymd('/') ?> - <?= $range_obj->end->ymd('/') ?>]</font>
+<div id="avg_chart"></div>
+? my $graphs;
+? my $i = 0;
+? for my $tag_obj ( @$tag_objs ) {
+?     $graphs .= sprintf '<graph gid="%s"><title>%s</title></graph>', $i++, $tag_fields->get_label( $tag_obj->name );
+? }
+? my $settings = sprintf '<settings><data_type>csv</data_type><csv_separator>,</csv_separator><graphs>%s</graphs></settings>', $graphs;
+? my $data = join '\n', @$lines;
+<script language="javascript" type="text/javascript">
+var so = new SWFObject("/static/amline/amline.swf", "amline", "640", "400", "8", "#FFFFFF");
+so.addVariable("path", "/static/amline/");
+so.addVariable("chart_settings", "<?= $settings ?>");
+so.addVariable("chart_data", "<?= $data ?>");
+so.write("avg_chart");
 </script>
 
-
-<div>
-? for my $tag_obj ( @{$service_obj->get_tag_objs} ){
-? my $chart_obj = $tag_obj->get_tag_range_log_chart_obj($range_obj);
-    <div id="avg-tag-chart-<?= $tag_obj->name ?>"></div>
-    <script>
-    $.jqplot('avg-tag-chart-<?= $tag_obj->name ?>',<?=  Text::MicroTemplate::encoded_string $chart_obj->get_data_part() ; ?>
-    ,{
-        legend: {show: true, location: 'nw'},
-        title: '<?= $tag_fields->get_label($tag_obj->name) ?>[<?= $sample->{$tag_obj->name} ?> <font size="2">サンプル</font>]',
-        series:<?= Text::MicroTemplate::encoded_string $chart_obj->get_series_part()  ?>,
-        axes:{
-            xaxis:{
-                renderer:$.jqplot.DateAxisRenderer,
-                tickInterval:'1 day' ,
-                tickOptions:{formatString:'%d'},
-                min:'<?= $range_obj->start->ymd ?>',
-                max:'<?= $range_obj->end->ymd ?>'
-            },
-            yaxis:{
-                numberTicks:12 ,
-                tickOptions:{formatString:'%d%'},
-                max:100,
-                min:0 
-            },
-            y2axis:{
-                autoscale:true,
-                tickOptions:{formatString:'%d'}
-            }
-        }
-    }
-    ); 
-    </script>
+? for my $tag_obj ( @$tag_objs ){
+?     my $graphs;
+?     my $i = 0;
+?     for my $range ( @{ $tag_range_of->{ $tag_obj->name }->{ ranges } } ) {
+?         $graphs .= sprintf '<graph gid="%s"><title>%s</title></graph>', $i++, $range;
+?     }
+?     my $settings = sprintf '<settings><data_type>csv</data_type><csv_separator>,</csv_separator><graphs>%s</graphs></settings>', $graphs;
+?     my $data = join '\n', @{ $tag_range_of->{ $tag_obj->name }->{ lines } };
+<br /><br />
+<font size="+1"><?= $tag_fields->get_label($tag_obj->name) ?>[サンプル数: <?= $sample->{$tag_obj->name} ?>]</font>
+<div id="avg_tag_chart_<?= $tag_obj->name ?>"></div>
+<script language="javascript" type="text/javascript">
+var so = new SWFObject("/static/amline/amline.swf", "amline", "640", "400", "8", "#FFFFFF");
+so.addVariable("path", "/static/amline/");
+so.addVariable("chart_settings", "<?= $settings ?>");
+so.addVariable("chart_data", "<?= $data ?>");
+so.write("avg_tag_chart_<?= $tag_obj->name ?>");
+</script>
 ? }
-</div>
 
-
-
-? } 
+? }
